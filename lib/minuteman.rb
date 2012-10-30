@@ -1,6 +1,6 @@
 require "redis"
 require "time"
-require "bitanalytics/time_events"
+require "minuteman/time_events"
 
 # Until redis gem gets updated
 class Redis
@@ -17,10 +17,10 @@ class Redis
   end
 end
 
-class BitAnalytics
+class Minuteman
   attr_reader :redis
 
-  PREFIX = "bitanalytics"
+  PREFIX = "minuteman"
 
   # Public:
   #
@@ -48,7 +48,7 @@ class BitAnalytics
 
   def reset_operations_cache
     prefix = [
-      PREFIX, BitAnalytics::BitOperations::BIT_OPERATION_PREFIX
+      PREFIX, Minuteman::BitOperations::BIT_OPERATION_PREFIX
     ].join("_")
 
     keys = @redis.keys([prefix, "*"].join("_"))

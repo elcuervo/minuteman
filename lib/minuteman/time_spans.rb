@@ -1,0 +1,7 @@
+require "minuteman/time_span"
+require "minuteman/time_spans/year"
+require "minuteman/time_spans/month"
+require "minuteman/time_spans/week"
+require "minuteman/time_spans/day"
+require "minuteman/time_spans/hour"
+require "minuteman/time_spans/minute"

@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
-  s.name              = "bitanalytics"
+  s.name              = "minuteman"
   s.version           = "0.0.1.pre"
   s.summary           = "Bit Analytics"
-  s.description       = ""
+  s.description       = "Fast and furious tracking system using Redis bitwise operations"
   s.authors           = ["elcuervo"]
   s.email             = ["yo@brunoaguirre.com"]
   s.homepage          = "http://github.com/elcuervo/bitanalytics"

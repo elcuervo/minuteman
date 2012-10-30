@@ -1,8 +1,8 @@
 require_relative "../test_helper"
 
-describe BitAnalytics do
+describe Minuteman do
   before do
-    @analytics = BitAnalytics.new
+    @analytics = Minuteman.new
 
     today = Time.now.utc
     last_month = today - (3600 * 24 * 30)

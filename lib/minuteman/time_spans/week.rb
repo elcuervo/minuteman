@@ -1,4 +1,4 @@
-class BitAnalytics
+class Minuteman
   class Week < TimeSpan
     def time_format(date)
       week = date.strftime("%W")

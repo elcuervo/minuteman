@@ -1,6 +1,6 @@
-require "bitanalytics/bit_operations"
+require "minuteman/bit_operations"
 
-class BitAnalytics
+class Minuteman
   class TimeSpan
     include BitOperations
 
@@ -15,7 +15,7 @@ class BitAnalytics
     end
 
     def build_key(event_name, date)
-      [BitAnalytics::PREFIX, event_name, date.join("-")].join("_")
+      [Minuteman::PREFIX, event_name, date.join("-")].join("_")
     end
   end
 end

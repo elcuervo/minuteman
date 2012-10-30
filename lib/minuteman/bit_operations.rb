@@ -1,4 +1,4 @@
-class BitAnalytics
+class Minuteman
   module BitOperations
     BIT_OPERATION_PREFIX = "bitop"
 
@@ -30,7 +30,7 @@ class BitAnalytics
 
     def bit_operation(type, events)
       destination_key = [
-        BitAnalytics::PREFIX,
+        Minuteman::PREFIX,
         BIT_OPERATION_PREFIX,
         type,
         events.join("-")

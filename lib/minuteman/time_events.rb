@@ -1,6 +1,6 @@
-require "bitanalytics/time_spans"
+require "minuteman/time_spans"
 
-class BitAnalytics
+class Minuteman
   module TimeEvents
     def self.start(redis, event_name, time)
       [Year, Month, Week, Day, Hour, Minute].map do |t|

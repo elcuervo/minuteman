@@ -1,7 +1,0 @@
-require "bitanalytics/time_span"
-require "bitanalytics/time_spans/year"
-require "bitanalytics/time_spans/month"
-require "bitanalytics/time_spans/week"
-require "bitanalytics/time_spans/day"
-require "bitanalytics/time_spans/hour"
-require "bitanalytics/time_spans/minute"
