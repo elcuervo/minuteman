@@ -15,11 +15,11 @@ class BitAnalytics
   # Public
   #
   def mark(event_name, id, time = Time.now.utc)
-    time_events = TimeEvents.start(@redis, event_name, time)
+    time_events = TimeEvents.start(redis, event_name, time)
 
     @redis.multi do
       time_events.each do |event|
-        @redis.setbit(event.key, id, 1)
+        redis.setbit(event.key, id, 1)
       end
     end
   end
@@ -28,4 +28,8 @@ class BitAnalytics
     Month.new(@redis, event_name, date)
   end
 
+  def reset_all
+    keys = @redis.keys([PREFIX, "*"].join("_"))
+    @redis.del(keys) if keys.any?
+  end
 end

@@ -5,6 +5,10 @@ describe BitAnalytics do
     @analytics = BitAnalytics.new
   end
 
+  after do
+    @analytics.reset_all
+  end
+
   it "should initialize correctly" do
     assert @analytics.redis
   end
