@@ -46,6 +46,15 @@ class BitAnalytics
     end
   end
 
+  def reset_operations_cache
+    prefix = [
+      PREFIX, BitAnalytics::BitOperations::BIT_OPERATION_PREFIX
+    ].join("_")
+
+    keys = @redis.keys([prefix, "*"].join("_"))
+    @redis.del(keys) if keys.any?
+  end
+
   def reset_all
     keys = @redis.keys([PREFIX, "*"].join("_"))
     @redis.del(keys) if keys.any?
