@@ -10,6 +10,7 @@ describe BitAnalytics do
     last_minute = today - 60
 
     @analytics.mark("login", 12)
+    @analytics.mark("login", 2)
     @analytics.mark("login", 2, last_week)
     @analytics.mark("login:successful", 567, last_month)
 
@@ -25,9 +26,7 @@ describe BitAnalytics do
     @last_month_events = @analytics.month("login:successful", last_month)
   end
 
-  after do
-    @analytics.reset_all
-  end
+  after { @analytics.reset_all }
 
   it "should initialize correctly" do
     assert @analytics.redis
@@ -35,8 +34,8 @@ describe BitAnalytics do
 
   it "should track an event on a time" do
     assert_equal 2, @year_events.length
-    assert_equal 1, @week_events.length
-    assert_equal 1, @week_events.length
+    assert_equal 2, @week_events.length
+    assert_equal 1, @last_week_events.length
     assert_equal 1, @last_month_events.length
 
     assert @year_events.include?(12)
@@ -51,4 +50,33 @@ describe BitAnalytics do
     assert !@last_minute_events.include?(12)
     assert @last_month_events.include?(567)
   end
+
+  it "should accept AND bitwise operations" do
+    and_operation = @week_events & @last_week_events
+
+    assert @week_events.include?(2)
+    assert @week_events.include?(12)
+
+    assert @last_week_events.include?(2)
+    assert !@last_week_events.include?(12)
+
+    assert_equal 1, and_operation.length
+
+    assert !and_operation.include?(12)
+    assert and_operation.include?(2)
+  end
+
+  it "should accept OR bitwise operations" do
+    or_operation = @week_events | @last_week_events
+
+    assert @week_events.include?(2)
+    assert @last_week_events.include?(2)
+    assert !@last_week_events.include?(12)
+
+    assert_equal 2, or_operation.length
+
+    assert or_operation.include?(12)
+    assert or_operation.include?(2)
+  end
+
 end

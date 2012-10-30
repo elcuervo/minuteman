@@ -4,6 +4,12 @@ require "bitanalytics/time_events"
 
 # Until redis gem gets updated
 class Redis
+  def bitop(operation, destkey, *keys)
+    synchronize do |client|
+      client.call([:bitop, operation, destkey] + keys)
+    end
+  end
+
   def bitcount(key, start = 0, stop = -1)
     synchronize do |client|
       client.call([:bitcount, key, start, stop])
