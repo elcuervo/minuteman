@@ -1,6 +1,6 @@
 # Minuteman
 
-![Minuteman](http://upload.wikimedia.org/wikipedia/commons/4/4b/Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg)
+![Minuteman](http://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg/220px-Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg)
 
 Fast analytics using Redis bitwise operations
 
