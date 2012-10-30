@@ -2,6 +2,15 @@ require "redis"
 require "time"
 require "bitanalytics/time_events"
 
+# Until redis gem gets updated
+class Redis
+  def bitcount(key, start = 0, stop = -1)
+    synchronize do |client|
+      client.call([:bitcount, key, start, stop])
+    end
+  end
+end
+
 class BitAnalytics
   attr_reader :redis
 
@@ -13,7 +22,7 @@ class BitAnalytics
     @redis = Redis.new(options)
   end
 
-  %w[month week days hour].each do |method_name|
+  %w[year month week day hour minute].each do |method_name|
     define_method(method_name) do |event_name, date|
       constructor = self.class.const_get(method_name.capitalize)
       constructor.new(@redis, event_name, date)

@@ -3,6 +3,26 @@ require_relative "../test_helper"
 describe BitAnalytics do
   before do
     @analytics = BitAnalytics.new
+
+    today = Time.now.utc
+    last_month = today - (3600 * 24 * 30)
+    last_week =  today - (3600 * 24 * 7)
+    last_minute = today - 60
+
+    @analytics.mark("login", 12)
+    @analytics.mark("login", 2, last_week)
+    @analytics.mark("login:successful", 567, last_month)
+
+    @year_events   = @analytics.year("login", today)
+    @week_events   = @analytics.week("login", today)
+    @month_events  = @analytics.month("login", today)
+    @day_events    = @analytics.day("login", today)
+    @hour_events   = @analytics.hour("login", today)
+    @minute_events = @analytics.minute("login", today)
+
+    @last_week_events = @analytics.week("login", last_week)
+    @last_minute_events = @analytics.minute("login", last_minute)
+    @last_month_events = @analytics.month("login:successful", last_month)
   end
 
   after do
@@ -14,23 +34,21 @@ describe BitAnalytics do
   end
 
   it "should track an event on a time" do
-    today = Time.now.utc
-    last_month = today - (3600 * 24 * 30)
-    last_week =  today - (3600 * 24 * 7)
+    assert_equal 2, @year_events.length
+    assert_equal 1, @week_events.length
+    assert_equal 1, @week_events.length
+    assert_equal 1, @last_month_events.length
 
-    @analytics.mark("login", 12)
-    @analytics.mark("login", 2, last_week)
-    @analytics.mark("login:successful", 567, last_month)
+    assert @year_events.include?(12)
+    assert @month_events.include?(12)
+    assert @week_events.include?(12)
+    assert @day_events.include?(12)
+    assert @hour_events.include?(12)
+    assert @minute_events.include?(12)
 
-    week_events = @analytics.week("login", today)
-    last_week_events = @analytics.week("login", last_week)
-    month_events = @analytics.month("login", today)
-    last_month_events = @analytics.month("login:successful", last_month)
-
-    assert month_events.include?(12)
-    assert week_events.include?(12)
-    assert last_week_events.include?(2)
-    assert !month_events.include?(5)
-    assert last_month_events.include?(567)
+    assert @last_week_events.include?(2)
+    assert !@month_events.include?(5)
+    assert !@last_minute_events.include?(12)
+    assert @last_month_events.include?(567)
   end
 end
