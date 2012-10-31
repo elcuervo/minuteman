@@ -55,14 +55,14 @@ gem install minuteman
 analytics = Minuteman.new
 
 # Mark an event for a given id
-analytics.mark("login:successfull", user.id)
-analytics.mark("login:successfull", other_user.id)
+analytics.mark("login:successful", user.id)
+analytics.mark("login:successful", other_user.id)
 
 # Mark in bulk
 analytics.mark("programming:love:ruby", User.where(favorite: "ruby").map(&:id))
 
 # Fetch events for a given time
-today_events = analytics.day("login:successfull", Time.now.utc)
+today_events = analytics.day("login:successful", Time.now.utc)
 
 # Check event length
 today_events.length
