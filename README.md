@@ -94,3 +94,15 @@ today_events.include?(admin.id)
 today_events.include?(User.all.map(&:id))
 #=> [true, true, false, false]
 ```
+
+## Bitwise operations
+
+You can intersect sets using AND, OR, NOT and XOR.
+
+```ruby
+successful_logins = analytics.month("login:successful", Time.now.utc)
+failed_logins = analytics.month("login:failed", Time.now.utc)
+
+total_logins = successful_logins & failed_logins
+total_logins.include?(user.id)
+```
