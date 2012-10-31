@@ -57,6 +57,8 @@ gem install minuteman
 ## Usage
 
 ```ruby
+require "minuteman"
+
 # Accepts an options hash that will be sent as is to Redis.new
 analytics = Minuteman.new
 
