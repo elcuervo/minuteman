@@ -1,11 +1,17 @@
 # Minuteman
 
+_Wikipedia_: Minutemen were members of teams from Massachusetts that were well-prepared
+militia companies of select men from the American colonial partisan militia
+during the American Revolutionary War. _They provided a highly mobile, rapidly
+deployed force that allowed the colonies to respond immediately to war threats,
+hence the name._
+
 ![Minuteman](http://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg/220px-Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg)
 
 Fast analytics using Redis bitwise operations
 
 ## Origin
-
+Freenode - #cuba.rb - 2012/10/30 15:20 UYT
 
 **conanbatt:** anyone here knows some good web app metrics tool ?
 
