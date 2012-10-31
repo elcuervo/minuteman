@@ -23,6 +23,12 @@ class Minuteman
       redis.bitcount(key)
     end
 
+    # Public: Calculates the NOT of the current key
+    #
+    def -@
+      bit_operation("NOT", key)
+    end
+
     # Public: Calculates the XOR against another timespan
     #
     #   timespan: Another BitOperations enabled class
@@ -69,7 +75,7 @@ class Minuteman
     #   events - The events to permuted
     #
     def bit_operation(type, events)
-      key = destination_key(type, events)
+      key = destination_key(type, Array(events))
       @redis.bitop(type, key, events)
       BitOperation.new(@redis, key)
     end

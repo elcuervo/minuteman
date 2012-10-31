@@ -7,7 +7,7 @@ describe Minuteman do
     today = Time.now.utc
     last_month = today - (3600 * 24 * 30)
     last_week =  today - (3600 * 24 * 7)
-    last_minute = today - 60
+    last_minute = today - 61
 
     @analytics.mark("login", 12)
     @analytics.mark("login", [2, 42])
@@ -51,7 +51,7 @@ describe Minuteman do
     assert @last_month_events.include?(567)
   end
 
-  it "should accept AND bitwise operations" do
+  it "should accept the AND bitwise operations" do
     and_operation = @week_events & @last_week_events
 
     assert @week_events.include?(2)
@@ -66,7 +66,7 @@ describe Minuteman do
     assert and_operation.include?(2)
   end
 
-  it "should accept OR bitwise operations" do
+  it "should accept the OR bitwise operations" do
     or_operation = @week_events | @last_week_events
 
     assert @week_events.include?(2)
@@ -77,6 +77,16 @@ describe Minuteman do
 
     assert or_operation.include?(12)
     assert or_operation.include?(2)
+  end
+
+  it "should accept the NOT bitwise operations" do
+    not_operation = -@week_events
+
+    assert @week_events.include?(2)
+    assert @week_events.include?(12)
+
+    assert !not_operation.include?(12)
+    assert !not_operation.include?(2)
   end
 
 end
