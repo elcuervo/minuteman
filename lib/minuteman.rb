@@ -37,12 +37,14 @@ class Minuteman
 
   # Public
   #
-  def mark(event_name, id, time = Time.now.utc)
+  def mark(event_name, ids, time = Time.now.utc)
     event_time = time.kind_of?(Time) ? time : Time.parse(time.to_s)
     time_events = TimeEvents.start(redis, event_name, event_time)
 
     @redis.multi do
-      time_events.each { |event| redis.setbit(event.key, id, 1) }
+      time_events.each do |event|
+        Array(ids).each { |id| redis.setbit(event.key, id, 1) }
+      end
     end
   end
 

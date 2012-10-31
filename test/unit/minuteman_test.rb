@@ -10,7 +10,7 @@ describe Minuteman do
     last_minute = today - 60
 
     @analytics.mark("login", 12)
-    @analytics.mark("login", 2)
+    @analytics.mark("login", [2, 42])
     @analytics.mark("login", 2, last_week)
     @analytics.mark("login:successful", 567, last_month)
 
@@ -33,14 +33,14 @@ describe Minuteman do
   end
 
   it "should track an event on a time" do
-    assert_equal 2, @year_events.length
-    assert_equal 2, @week_events.length
+    assert_equal 3, @year_events.length
+    assert_equal 3, @week_events.length
     assert_equal 1, @last_week_events.length
     assert_equal 1, @last_month_events.length
+    assert_equal [true, true, false], @week_events.include?(12, 2, 1)
 
     assert @year_events.include?(12)
     assert @month_events.include?(12)
-    assert @week_events.include?(12)
     assert @day_events.include?(12)
     assert @hour_events.include?(12)
     assert @minute_events.include?(12)
@@ -73,7 +73,7 @@ describe Minuteman do
     assert @last_week_events.include?(2)
     assert !@last_week_events.include?(12)
 
-    assert_equal 2, or_operation.length
+    assert_equal 3, or_operation.length
 
     assert or_operation.include?(12)
     assert or_operation.include?(2)

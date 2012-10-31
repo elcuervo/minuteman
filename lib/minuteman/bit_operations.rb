@@ -2,8 +2,9 @@ class Minuteman
   module BitOperations
     BIT_OPERATION_PREFIX = "bitop"
 
-    def include?(id)
-      redis.getbit(key, id) == 1
+    def include?(*ids)
+      result = ids.map { |id| redis.getbit(key, id) == 1 }
+      result.size == 1 ? result.first : result
     end
 
     def reset
@@ -28,16 +29,19 @@ class Minuteman
 
     private
 
-    def bit_operation(type, events)
-      destination_key = [
+    def destination_key(type, events)
+      [
         Minuteman::PREFIX,
         BIT_OPERATION_PREFIX,
         type,
         events.join("-")
       ].join("_")
+    end
 
-      @redis.bitop(type, destination_key, events)
-      BitOperation.new(@redis, destination_key)
+    def bit_operation(type, events)
+      key = destination_key(type, events)
+      @redis.bitop(type, key, events)
+      BitOperation.new(@redis, key)
     end
   end
 
