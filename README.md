@@ -72,6 +72,14 @@ analytics.mark("programming:love:ruby", User.where(favorite: "ruby").map(&:id))
 # Fetch events for a given time
 today_events = analytics.day("login:successful", Time.now.utc)
 
+# This also exists
+analytics.year("login:successful", Time.now.utc)
+analytics.month("login:successful", Time.now.utc)
+analytics.week("login:successful", Time.now.utc)
+analytics.day("login:successful", Time.now.utc)
+analytics.hour("login:successful", Time.now.utc)
+analytics.minute("login:successful", Time.now.utc)
+
 # Check event length
 today_events.length
 #=> 2
