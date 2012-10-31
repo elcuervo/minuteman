@@ -2,7 +2,7 @@ require "minuteman/time_spans"
 
 class Minuteman
   module TimeEvents
-    # Public: Helper to get all the time trakers ready
+    # Public: Helper to get all the time trackers ready
     #
     #   redis      - The Redis connection
     #   event_name - The event to be tracked
