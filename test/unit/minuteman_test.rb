@@ -7,7 +7,7 @@ describe Minuteman do
     today = Time.now.utc
     last_month = today - (3600 * 24 * 30)
     last_week =  today - (3600 * 24 * 7)
-    last_minute = today - 61
+    last_minute = today - 120
 
     @analytics.mark("login", 12)
     @analytics.mark("login", [2, 42])
@@ -49,6 +49,27 @@ describe Minuteman do
     assert !@month_events.include?(5)
     assert !@last_minute_events.include?(12)
     assert @last_month_events.include?(567)
+  end
+
+  it "should list all the events" do
+    assert_equal ["login:successful", "login"], @analytics.events
+  end
+
+  it "should reset all the keys" do
+    assert_equal 2, @analytics.events.size
+
+    @analytics.reset_all
+
+    assert_equal 0, @analytics.events.size
+  end
+
+  it "should reset all bit operation keys" do
+    @week_events & @last_week_events
+    assert_equal 1, @analytics.operations.size
+
+    @analytics.reset_operations_cache
+
+    assert_equal 0, @analytics.operations.size
   end
 
   it "should accept the AND bitwise operations" do
