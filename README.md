@@ -80,7 +80,11 @@ analytics.day("login:successful", Time.now.utc)
 analytics.hour("login:successful", Time.now.utc)
 analytics.minute("login:successful", Time.now.utc)
 
-# Check event length
+# Lists all the tracked events
+analytics.events
+#=> ["login:successful", "programming:login:ruby"]
+
+# Check event length on a given time
 today_events.length
 #=> 2
 
@@ -105,4 +109,7 @@ successful_buys = analytics.month("buy:complete", Time.now.utc)
 
 successful_buys_after_invitation = invited & successful_buys
 successful_buys_after_invitation.include?(user.id)
+
+# Clean up all the operations cache
+analytics.reset_operations_cache
 ```
