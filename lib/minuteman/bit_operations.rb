@@ -28,6 +28,7 @@ class Minuteman
     def -@
       bit_operation("NOT", key)
     end
+    alias :~@ :-@
 
     # Public: Calculates the substract of one set to another
     #

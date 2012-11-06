@@ -101,7 +101,7 @@ describe Minuteman do
   end
 
   it "should accept the NOT bitwise operations" do
-    not_operation = -@week_events
+    not_operation = ~@week_events
 
     assert @week_events.include?(2)
     assert @week_events.include?(12)
