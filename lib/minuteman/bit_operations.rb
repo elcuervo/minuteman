@@ -32,6 +32,8 @@ class Minuteman
 
     # Public: Calculates the substract of one set to another
     #
+    #   timespan: Another BitOperations enabled class
+    #
     def -(timespan)
       self ^ (self & timespan)
     end
