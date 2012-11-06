@@ -44,6 +44,7 @@ class Minuteman
     def |(timespan)
       bit_operation("OR", [key, timespan.key])
     end
+    alias :+ :|
 
     # Public: Calculates the AND against another timespan
     #

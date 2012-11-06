@@ -110,6 +110,19 @@ describe Minuteman do
     assert !not_operation.include?(2)
   end
 
+  it "should have an alias for the OR operator" do
+    or_operation = @week_events + @last_week_events
+
+    assert @week_events.include?(2)
+    assert @last_week_events.include?(2)
+    assert !@last_week_events.include?(12)
+
+    assert_equal 3, or_operation.length
+
+    assert or_operation.include?(12)
+    assert or_operation.include?(2)
+  end
+
   it "should accept multiple consecutive operations" do
     multi_operation = @week_events & @last_week_events | @year_events
 
