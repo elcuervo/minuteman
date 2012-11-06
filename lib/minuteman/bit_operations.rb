@@ -29,6 +29,12 @@ class Minuteman
       bit_operation("NOT", key)
     end
 
+    # Public: Calculates the substract of one set to another
+    #
+    def -(timespan)
+      self ^ (self & timespan)
+    end
+
     # Public: Calculates the XOR against another timespan
     #
     #   timespan: Another BitOperations enabled class

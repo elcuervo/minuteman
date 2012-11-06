@@ -123,6 +123,14 @@ describe Minuteman do
     assert or_operation.include?(2)
   end
 
+  it "should accept the substraction of a set" do
+    substract_operation = @year_events - @week_events
+
+    assert @week_events.include?(2)
+    assert @year_events.include?(2)
+    assert !substract_operation.include?(2)
+  end
+
   it "should accept multiple consecutive operations" do
     multi_operation = @week_events & @last_week_events | @year_events
 
