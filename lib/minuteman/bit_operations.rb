@@ -76,11 +76,15 @@ class Minuteman
     #
     def bit_operation(type, events)
       key = destination_key(type, Array(events))
-      @redis.bitop(type, key, events)
-      BitOperation.new(@redis, key)
+      redis.bitop(type, key, events)
+      BitOperation.new(redis, key)
     end
   end
 
+  # Public: The result of intersecting results
+  #   redis   - The Redis connection
+  #   key     - The key where the result it's stored
+  #
   class BitOperation < Struct.new(:redis, :key)
     include BitOperations
   end

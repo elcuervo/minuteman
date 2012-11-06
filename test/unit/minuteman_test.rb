@@ -110,4 +110,9 @@ describe Minuteman do
     assert !not_operation.include?(2)
   end
 
+  it "should accept multiple consecutive operations" do
+    multi_operation = @week_events & @last_week_events | @year_events
+
+    assert_kind_of Minuteman::BitOperation, multi_operation
+  end
 end
