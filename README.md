@@ -113,3 +113,13 @@ successful_buys_after_invitation.include?(user.id)
 # Clean up all the operations cache
 analytics.reset_operations_cache
 ```
+
+Also you can write more complex set operations
+
+```ruby
+invited = analytics.month("email:invitation")
+from_adsense = analytics.month("adsense:promo")
+successful_buys = analytics.month("buy:complete")
+
+conversion_rate = (invited | from_adsense) & successful_buys
+```
