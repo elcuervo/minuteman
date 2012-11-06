@@ -101,7 +101,19 @@ today_events.include?(User.all.map(&:id))
 
 ## Bitwise operations
 
-You can intersect sets using AND(`&`), OR(`|`), NOT(`-`) and XOR(`^`).
+You can intersect sets using bitwise AND(`&`), OR(`|`), NOT(`-`) and XOR(`^`).
+Also you can use plus(`+`) and minus(`-`) operations.
+
+```ruby
+set1 + set2
+set1 - set2
+set1 & set2
+set1 | set2
+set1 ^ set2
+-set1
+```
+
+### Example
 
 ```ruby
 invited = analytics.month("email:invitation", Time.now.utc)
