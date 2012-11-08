@@ -68,7 +68,7 @@ analytics.mark("login:successful", user.id)
 analytics.mark("login:successful", other_user.id)
 
 # Mark in bulk
-analytics.mark("programming:love:ruby", User.where(favorite: "ruby").map(&:id))
+analytics.mark("programming:love:ruby", User.where(favorite: "ruby").pluck(:id))
 
 # Fetch events for a given time
 today_events = analytics.day("login:successful", Time.now.utc)
@@ -96,7 +96,7 @@ today_events.include?(admin.id)
 #=> false
 
 # Bulk check
-today_events.include?(User.all.map(&:id))
+today_events.include?(User.all.pluck(:id))
 #=> [true, true, false, false]
 ```
 
