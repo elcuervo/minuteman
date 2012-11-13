@@ -11,5 +11,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency("redis", "~> 3.0.2")
 
-  s.add_development_dependency("minitest", "~> 4.1.0")
+  s.add_development_dependency("minitest", "~> 4.2.0")
 end

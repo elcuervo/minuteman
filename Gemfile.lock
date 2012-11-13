@@ -7,7 +7,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    minitest (4.1.0)
+    minitest (4.2.0)
     rake (0.9.2.2)
     redis (3.0.2)
 
@@ -15,6 +15,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  minitest (~> 4.1.0)
+  minitest (~> 4.2.0)
   minuteman!
   rake
