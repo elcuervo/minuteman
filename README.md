@@ -126,7 +126,7 @@ some of the marks you made.
 
 ```ruby
 paid = analytics.month("buy:complete")
-payed_from_miami = paid & User.find_by_state("MIA").pluck(&:id)
+payed_from_miami = paid & User.find_all_by_state("MIA").map(&:id)
 payed_from_miami.size
 #=> 43
 payed_users_from_miami = payed_from_miami.map { |id| User.find(id) }
