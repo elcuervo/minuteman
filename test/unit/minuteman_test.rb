@@ -150,4 +150,12 @@ describe Minuteman do
     assert_kind_of Minuteman::BitOperations::Data, ids
     assert_equal [43], ids
   end
+
+  it "a resulting set with data should behave like an array" do
+    ids = @week_events & [2, 12, 43]
+
+    assert_kind_of Enumerator, ids.each
+    assert_kind_of Enumerator, ids.map
+    assert_equal 2, ids.size
+  end
 end

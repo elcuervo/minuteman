@@ -10,9 +10,18 @@ class Minuteman
     #
     class Data < Struct.new(:redis, :key, :data)
       include BitOperations
+      include Enumerable
 
       def to_ary
         data
+      end
+
+      def size
+        data.size
+      end
+
+      def each(&block)
+        data.each(&block)
       end
 
       def ==(other)
