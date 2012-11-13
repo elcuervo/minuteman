@@ -97,7 +97,7 @@ class Minuteman
   #
   def operations_cache_key_prefix
     [
-      PREFIX, Minuteman::BitOperations::BIT_OPERATION_PREFIX
+      PREFIX, Minuteman::KeysMethods::BIT_OPERATION_PREFIX
     ].join("_")
   end
 end

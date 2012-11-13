@@ -1,7 +1,8 @@
+require "minuteman/bit_operations/plain"
+require "minuteman/bit_operations/with_data"
+
 class Minuteman
   module BitOperations
-    BIT_OPERATION_PREFIX = "bitop"
-
     # Public: Checks for the existance of ids on a given set
     #
     #   ids - Array of ids
@@ -26,7 +27,7 @@ class Minuteman
     # Public: Calculates the NOT of the current key
     #
     def -@
-      bit_operation("NOT", key)
+      operation("NOT", key)
     end
     alias :~@ :-@
 
@@ -35,12 +36,7 @@ class Minuteman
     #   timespan: Another BitOperations enabled class
     #
     def -(timespan)
-      case timespan
-      when Array
-        bit_operation_with_data("MINUS", timespan)
-      when TimeSpan
-        self ^ (self & timespan)
-      end
+      operation("MINUS", timespan)
     end
 
     # Public: Calculates the XOR against another timespan
@@ -78,57 +74,37 @@ class Minuteman
       redis.getbit(key, id) == 1
     end
 
-    # Private: The destination key for the operation
+    # Private: Checks if a timespan is operable
     #
-    #   type   - The bitwise operation
-    #   events - The events to permuted
+    #   timespan: The given timespan
     #
-    def destination_key(type, events)
-      [
-        Minuteman::PREFIX,
-        BIT_OPERATION_PREFIX,
-        type,
-        events.join("-")
-      ].join("_")
+    def operable_timespan(timespan)
+      timespan.class.ancestors.include?(BitOperations)
     end
 
-    def operation(type, timespan)
-      case timespan
-      when Array
-        bit_operation_with_data(type, timespan)
-      when TimeSpan, BitOperationResult
-        bit_operation(type, [key, timespan.key])
+    # Private: returns the class to use for the operation
+    #
+    #   timespan: The given timespan
+    #
+    def operation_class(timespan)
+      case true
+      when timespan.is_a?(Array) then WithData
+      when timespan.is_a?(String), operable_timespan(timespan) then Plain
       end
     end
 
-    # Private: Returns an operable class given data
+    # Private: executes an operation between the current timespan and another
     #
-    #   type - The operation
-    #   data - The Array data
+    #   type:     The operation type
+    #   timespan: The given timespan
     #
-    def bit_operation_with_data(type, data)
-      normalized_data = Array(data)
-      key = destination_key("data-#{type}", normalized_data)
-      command = case type
-                when "AND"    then :select
-                when "MINUS"  then :reject
-                end
+    def operation(type, timespan)
+      if type == "MINUS" && operable_timespan(timespan)
+        return self ^ (self & timespan)
+      end
 
-      intersected_data = normalized_data.send(command) { |id| getbit(id) }
-
-      intersected_data.each { |id| redis.setbit(key, id, 1) }
-      BitOperationData.new(redis, key, intersected_data)
-    end
-
-    # Private: Executes a bit operation
-    #
-    #   type   - The bitwise operation
-    #   events - The events to permuted
-    #
-    def bit_operation(type, events)
-      key = destination_key(type, Array(events))
-      redis.bitop(type, key, events)
-      BitOperationResult.new(redis, key)
+      klass = operation_class(timespan)
+      klass.new(redis, type, timespan, key).call
     end
   end
 end

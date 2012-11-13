@@ -1,6 +1,4 @@
 require "minuteman/bit_operations"
-require "minuteman/bit_operation_data"
-require "minuteman/bit_operation_result"
 
 class Minuteman
   class TimeSpan

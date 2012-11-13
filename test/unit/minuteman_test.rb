@@ -134,20 +134,20 @@ describe Minuteman do
   it "should accept multiple consecutive operations" do
     multi_operation = @week_events & @last_week_events | @year_events
 
-    assert_kind_of Minuteman::BitOperationResult, multi_operation
+    assert_kind_of Minuteman::BitOperations::Result, multi_operation
   end
 
   it "should return the ids that belong to a given set" do
     ids = @week_events & [2, 12, 43]
 
-    assert_kind_of Minuteman::BitOperationData, ids
+    assert_kind_of Minuteman::BitOperations::Data, ids
     assert_equal [2, 12], ids
   end
 
   it "should return the ids that do not belong to the given set" do
     ids = @week_events - [2, 12, 43]
 
-    assert_kind_of Minuteman::BitOperationData, ids
+    assert_kind_of Minuteman::BitOperations::Data, ids
     assert_equal [43], ids
   end
 end
