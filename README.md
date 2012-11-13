@@ -113,7 +113,7 @@ set1 | set2
 set1 ^ set2
 
 ~set1 \
-        ==> This are the same
+       |==> This are the same
 -set1 /
 ```
 
