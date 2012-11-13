@@ -48,7 +48,7 @@ class Minuteman
     #   timespan: Another BitOperations enabled class
     #
     def ^(timespan)
-      bit_operation("XOR", [key, timespan.key])
+      operation("XOR", timespan)
     end
 
     # Public: Calculates the OR against another timespan
@@ -56,7 +56,7 @@ class Minuteman
     #   timespan: Another BitOperations enabled class or an Array
     #
     def |(timespan)
-      bit_operation("OR", [key, timespan.key])
+      operation("OR", timespan)
     end
     alias :+ :|
 
@@ -65,12 +65,7 @@ class Minuteman
     #   timespan: Another BitOperations enabled class or an Array
     #
     def &(timespan)
-      case timespan
-      when Array
-        bit_operation_with_data("AND", timespan)
-      when TimeSpan
-        bit_operation("AND", [key, timespan.key])
-      end
+      operation("AND", timespan)
     end
 
     private
@@ -95,6 +90,15 @@ class Minuteman
         type,
         events.join("-")
       ].join("_")
+    end
+
+    def operation(type, timespan)
+      case timespan
+      when Array
+        bit_operation_with_data(type, timespan)
+      when TimeSpan, BitOperationResult
+        bit_operation(type, [key, timespan.key])
+      end
     end
 
     # Private: Returns an operable class given data
@@ -124,34 +128,7 @@ class Minuteman
     def bit_operation(type, events)
       key = destination_key(type, Array(events))
       redis.bitop(type, key, events)
-      BitOperation.new(redis, key)
+      BitOperationResult.new(redis, key)
     end
-  end
-
-  # Public: The conversion of an array to an operable class
-  #
-  #   redis   - The Redis connection
-  #   key     - The key where the result it's stored
-  #   data    - The original data of the intersection
-  #
-  class BitOperationData < Struct.new(:redis, :key, :data)
-    include BitOperations
-
-    def to_ary
-      data
-    end
-
-    def ==(other)
-      other == data
-    end
-  end
-
-  # Public: The result of intersecting results
-  #
-  #   redis   - The Redis connection
-  #   key     - The key where the result it's stored
-  #
-  class BitOperation < Struct.new(:redis, :key)
-    include BitOperations
   end
 end
