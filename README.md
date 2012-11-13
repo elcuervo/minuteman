@@ -117,6 +117,23 @@ set1 ^ set2
 -set1 /
 ```
 
+### Intersecting with arrays
+
+Let's assume this scenario:
+
+You have a list of users and want to know which of them have been going throught
+some of the marks you made.
+
+```ruby
+paid = analytics.month("buy:complete")
+payed_from_miami = paid & User.find_by_state("MIA").pluck(&:id)
+payed_from_miami.size
+#=> 43
+payed_users_from_miami = payed_from_miami.map { |id| User.find(id) }
+```
+
+Currently the supported commands to interact with arrays are `&` and `-`
+
 ### Example
 
 ```ruby
