@@ -7,7 +7,7 @@ class Minuteman
     #   ids - Array of ids
     #
     def include?(*ids)
-      result = ids.map { |id| redis.getbit(key, id) == 1 }
+      result = ids.map { |id| getbit(id) }
       result.size == 1 ? result.first : result
     end
 
@@ -35,7 +35,12 @@ class Minuteman
     #   timespan: Another BitOperations enabled class
     #
     def -(timespan)
-      self ^ (self & timespan)
+      case timespan
+      when Array
+        bit_operation_with_data("MINUS", timespan)
+      when TimeSpan
+        self ^ (self & timespan)
+      end
     end
 
     # Public: Calculates the XOR against another timespan
@@ -48,7 +53,7 @@ class Minuteman
 
     # Public: Calculates the OR against another timespan
     #
-    #   timespan: Another BitOperations enabled class
+    #   timespan: Another BitOperations enabled class or an Array
     #
     def |(timespan)
       bit_operation("OR", [key, timespan.key])
@@ -57,13 +62,26 @@ class Minuteman
 
     # Public: Calculates the AND against another timespan
     #
-    #   timespan: Another BitOperations enabled class
+    #   timespan: Another BitOperations enabled class or an Array
     #
     def &(timespan)
-      bit_operation("AND", [key, timespan.key])
+      case timespan
+      when Array
+        bit_operation_with_data("AND", timespan)
+      when TimeSpan
+        bit_operation("AND", [key, timespan.key])
+      end
     end
 
     private
+
+    # Private: Helper to access the value a given bit
+    #
+    #   id: The bit
+    #
+    def getbit(id)
+      redis.getbit(key, id) == 1
+    end
 
     # Private: The destination key for the operation
     #
@@ -79,6 +97,25 @@ class Minuteman
       ].join("_")
     end
 
+    # Private: Returns an operable class given data
+    #
+    #   type - The operation
+    #   data - The Array data
+    #
+    def bit_operation_with_data(type, data)
+      normalized_data = Array(data)
+      key = destination_key("data-#{type}", normalized_data)
+      command = case type
+                when "AND"    then :select
+                when "MINUS"  then :reject
+                end
+
+      intersected_data = normalized_data.send(command) { |id| getbit(id) }
+
+      intersected_data.each { |id| redis.setbit(key, id, 1) }
+      BitOperationData.new(redis, key, intersected_data)
+    end
+
     # Private: Executes a bit operation
     #
     #   type   - The bitwise operation
@@ -91,7 +128,26 @@ class Minuteman
     end
   end
 
+  # Public: The conversion of an array to an operable class
+  #
+  #   redis   - The Redis connection
+  #   key     - The key where the result it's stored
+  #   data    - The original data of the intersection
+  #
+  class BitOperationData < Struct.new(:redis, :key, :data)
+    include BitOperations
+
+    def to_ary
+      data
+    end
+
+    def ==(other)
+      other == data
+    end
+  end
+
   # Public: The result of intersecting results
+  #
   #   redis   - The Redis connection
   #   key     - The key where the result it's stored
   #

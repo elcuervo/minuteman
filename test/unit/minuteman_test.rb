@@ -136,4 +136,18 @@ describe Minuteman do
 
     assert_kind_of Minuteman::BitOperation, multi_operation
   end
+
+  it "should return the ids that belong to a given set" do
+    ids = @week_events & [2, 12, 43]
+
+    assert_kind_of Minuteman::BitOperationData, ids
+    assert_equal [2, 12], ids
+  end
+
+  it "should return the ids that do not belong to the given set" do
+    ids = @week_events - [2, 12, 43]
+
+    assert_kind_of Minuteman::BitOperationData, ids
+    assert_equal [43], ids
+  end
 end
