@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Minuteman by elcuervo</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Minuteman</h1>
+          <h2>Fast analytics using Redis</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/elcuervo/minuteman/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/elcuervo/minuteman/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/elcuervo/minuteman" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>Minuteman</h1>
+
+<p><a href="https://codeclimate.com/github/elcuervo/minuteman"><img src="https://codeclimate.com/badge.png" alt="Code Climate"></a></p>
+
+<p><em>Wikipedia</em>: Minutemen were members of teams from Massachusetts that were well-prepared
+militia companies of select men from the American colonial partisan militia
+during the American Revolutionary War. <em>They provided a highly mobile, rapidly
+deployed force that allowed the colonies to respond immediately to war threats,
+hence the name.</em></p>
+
+<p><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg/220px-Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg" alt="Minuteman"></p>
+
+<p>Fast analytics using Redis bitwise operations</p>
+
+<h2>Origin</h2>
+
+<p>Freenode - #cuba.rb - 2012/10/30 15:20 UYT</p>
+
+<p><strong>conanbatt:</strong> anyone here knows some good web app metrics tool ?</p>
+
+<p><strong>conanbatt:</strong> i use google analytics for the page itself, and its good, but for the webapp its really not useful</p>
+
+<p><strong>tizoc: conanbatt:</strong> <a href="http://amix.dk/blog/post/19714">http://amix.dk/blog/post/19714</a> you can port this (if an equivalent doesn't exist already)</p>
+
+<p><strong>conanbatt:</strong> the metrics link is excellent but its python and released 5 days ago lol</p>
+
+<p><strong>elcuervo: tizoc:</strong> the idea it's awesome</p>
+
+<p><strong>elcuervo:</strong> interesting...</p>
+
+<h2>Inspiration</h2>
+
+<ul>
+<li><a href="http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/">http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/</a></li>
+<li><a href="http://amix.dk/blog/post/19714">http://amix.dk/blog/post/19714</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Bit_array">http://en.wikipedia.org/wiki/Bit_array</a></li>
+</ul><h2>Installation</h2>
+
+<h3>Important!</h3>
+
+<p>Depends on Redis 2.6 for the <code>bitop</code> operation. You can install it using:</p>
+
+<div class="highlight"><pre>brew install --devel redis
+</pre></div>
+
+<p>or upgrading your current version:</p>
+
+<div class="highlight"><pre>brew upgrade --devel redis
+</pre></div>
+
+<p>And then install the gem</p>
+
+<div class="highlight"><pre>gem install minuteman
+</pre></div>
+
+<h2>Usage</h2>
+
+<div class="highlight"><pre><span class="nb">require</span> <span class="s2">"minuteman"</span>
+
+<span class="c1"># Accepts an options hash that will be sent as is to Redis.new</span>
+<span class="n">analytics</span> <span class="o">=</span> <span class="no">Minuteman</span><span class="o">.</span><span class="n">new</span>
+
+<span class="c1"># Mark an event for a given id</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="n">other_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1"># Mark in bulk</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">mark</span><span class="p">(</span><span class="s2">"programming:love:ruby"</span><span class="p">,</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">favorite</span><span class="p">:</span> <span class="s2">"ruby"</span><span class="p">)</span><span class="o">.</span><span class="n">pluck</span><span class="p">(</span><span class="ss">:id</span><span class="p">))</span>
+
+<span class="c1"># Fetch events for a given time</span>
+<span class="n">today_events</span> <span class="o">=</span> <span class="n">analytics</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+<span class="c1"># This also exists</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">year</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">week</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">hour</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">minute</span><span class="p">(</span><span class="s2">"login:successful"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+<span class="c1"># Lists all the tracked events</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">events</span>
+<span class="c1">#=&gt; ["login:successful", "programming:login:ruby"]</span>
+
+<span class="c1"># Check event length on a given time</span>
+<span class="n">today_events</span><span class="o">.</span><span class="n">length</span>
+<span class="c1">#=&gt; 2</span>
+
+<span class="c1"># Check for existance</span>
+<span class="n">today_events</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="c1">#=&gt; true</span>
+<span class="n">today_events</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="c1">#=&gt; false</span>
+
+<span class="c1"># Bulk check</span>
+<span class="n">today_events</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="no">User</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">pluck</span><span class="p">(</span><span class="ss">:id</span><span class="p">))</span>
+<span class="c1">#=&gt; [true, true, false, false]</span>
+</pre></div>
+
+<h2>Bitwise operations</h2>
+
+<p>You can intersect sets using bitwise AND(<code>&amp;</code>), OR(<code>|</code>), NOT(<code>~</code>, <code>-</code>) and XOR(<code>^</code>).
+Also you can use plus(<code>+</code>) and minus(<code>-</code>) operations.</p>
+
+<div class="highlight"><pre><span class="n">set1</span> <span class="o">+</span> <span class="n">set2</span>
+<span class="n">set1</span> <span class="o">-</span> <span class="n">set2</span>
+<span class="n">set1</span> <span class="o">&amp;</span> <span class="n">set2</span>
+<span class="n">set1</span> <span class="o">|</span> <span class="n">set2</span>
+<span class="n">set1</span> <span class="o">^</span> <span class="n">set2</span>
+
+<span class="o">~</span><span class="n">set1</span> <span class="p">\</span>
+       <span class="o">|==&gt;</span> <span class="no">This</span> <span class="n">are</span> <span class="n">the</span> <span class="n">same</span>
+<span class="o">-</span><span class="n">set1</span> <span class="o">/</span>
+</pre></div>
+
+<h3>Intersecting with arrays</h3>
+
+<p>Let's assume this scenario:</p>
+
+<p>You have a list of users and want to know which of them have been going throught
+some of the marks you made.</p>
+
+<div class="highlight"><pre><span class="n">paid</span> <span class="o">=</span> <span class="n">analytics</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="s2">"buy:complete"</span><span class="p">)</span>
+<span class="n">payed_from_miami</span> <span class="o">=</span> <span class="n">paid</span> <span class="o">&amp;</span> <span class="no">User</span><span class="o">.</span><span class="n">find_all_by_state</span><span class="p">(</span><span class="s2">"MIA"</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:id</span><span class="p">)</span>
+<span class="n">payed_from_miami</span><span class="o">.</span><span class="n">size</span>
+<span class="c1">#=&gt; 43</span>
+<span class="n">payed_users_from_miami</span> <span class="o">=</span> <span class="n">payed_from_miami</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="nb">id</span><span class="o">|</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+
+<p>Currently the supported commands to interact with arrays are <code>&amp;</code> and <code>-</code></p>
+
+<h3>Example</h3>
+
+<div class="highlight"><pre><span class="n">invited</span> <span class="o">=</span> <span class="n">analytics</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="s2">"email:invitation"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">successful_buys</span> <span class="o">=</span> <span class="n">analytics</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="s2">"buy:complete"</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+<span class="n">successful_buys_after_invitation</span> <span class="o">=</span> <span class="n">invited</span> <span class="o">&amp;</span> <span class="n">successful_buys</span>
+<span class="n">successful_buys_after_invitation</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1"># Clean up all the operations cache</span>
+<span class="n">analytics</span><span class="o">.</span><span class="n">reset_operations_cache</span>
+</pre></div>
+
+<p>Also you can write more complex set operations</p>
+
+<div class="highlight"><pre><span class="n">invited</span> <span class="o">=</span> <span class="n">analytics</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="s2">"email:invitation"</span><span class="p">)</span>
+<span class="n">from_adsense</span> <span class="o">=</span> <span class="n">analytics</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="s2">"adsense:promo"</span><span class="p">)</span>
+<span class="n">successful_buys</span> <span class="o">=</span> <span class="n">analytics</span><span class="o">.</span><span class="n">month</span><span class="p">(</span><span class="s2">"buy:complete"</span><span class="p">)</span>
+
+<span class="n">conversion_rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">invited</span> <span class="o">|</span> <span class="n">from_adsense</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">successful_buys</span>
+</pre></div>
+        </section>
+
+        <footer>
+          Minuteman is maintained by <a href="https://github.com/elcuervo">elcuervo</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
