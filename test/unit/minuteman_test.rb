@@ -52,7 +52,8 @@ describe Minuteman do
   end
 
   it "should list all the events" do
-    assert_equal ["login:successful", "login"], @analytics.events
+    assert_equal 2, @analytics.events.size
+    assert_equal ["login", "login:successful"], @analytics.events.sort
   end
 
   it "should reset all the keys" do
