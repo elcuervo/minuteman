@@ -1,0 +1,7 @@
+markdown: rdiscount
+lsi: true
+auto: true
+pygments: true
+url: http://elcuervo.github.com/minuteman/
+author: elCuervo
+title: Minuteman - Fast analytics using Redis
