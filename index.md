@@ -15,50 +15,14 @@ hence the name._
 
 ## How do I use it?
 
-```bash
-  gem install minuteman
-```
+<script src="https://gist.github.com/4120070.js?file=install.sh"></script>
 
-```ruby
-require "minuteman"
+<script src="https://gist.github.com/4120070.js?file=minuteman_example.rb"></script>
 
-# Accepts an options hash that will be sent as is to Redis.new
-analytics = Minuteman.new
+## How about complex operations?
 
-# Mark an event for a given id
-analytics.mark("login:successful", user.id)
-analytics.mark("login:successful", other_user.id)
+<script src="https://gist.github.com/4120070.js?file=minuteman_operations.rb"></script>
 
-# Mark in bulk
-analytics.mark("programming:love:ruby", User.where(favorite: "ruby").pluck(:id))
+## What can I do if I want to join it with my User table?
 
-# Fetch events for a given time
-today_events = analytics.day("login:successful", Time.now.utc)
-
-# This also exists
-analytics.year("login:successful", Time.now.utc)
-analytics.month("login:successful", Time.now.utc)
-analytics.week("login:successful", Time.now.utc)
-analytics.day("login:successful", Time.now.utc)
-analytics.hour("login:successful", Time.now.utc)
-analytics.minute("login:successful", Time.now.utc)
-
-# Lists all the tracked events
-analytics.events
-#=> ["login:successful", "programming:login:ruby"]
-
-# Check event length on a given time
-today_events.length
-#=> 2
-
-# Check for existance
-today_events.include?(user.id)
-#=> true
-today_events.include?(admin.id)
-#=> false
-
-# Bulk check
-today_events.include?(User.all.pluck(:id))
-#=> [true, true, false, false]
-```
-
+<script src="https://gist.github.com/4120070.js?file=minuteman_array.rb"></script>
