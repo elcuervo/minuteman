@@ -1,7 +1,9 @@
-markdown: rdiscount
+markdown: redcarpet2
 lsi: true
 auto: true
 pygments: true
 url: http://elcuervo.github.com/minuteman/
 author: elCuervo
 title: Minuteman - Fast analytics using Redis
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "strikethrough", "superscript", "with_toc_data"]
