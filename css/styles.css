@@ -32,3 +32,9 @@ article {
   padding: 20px;
 }
 
+article img {
+  border: 2px solid black;
+  padding: 10px;
+  background-color: white;
+}
+
