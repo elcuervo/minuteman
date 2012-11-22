@@ -1,4 +1,4 @@
-markdown: redcarpet2
+markdown: rdiscount
 lsi: true
 auto: true
 pygments: true
