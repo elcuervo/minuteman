@@ -38,3 +38,9 @@ article img {
   background-color: white;
 }
 
+.ribbon {
+  position: fixed;
+  top: 0;
+  right: 30px;
+  border: 0;
+}
