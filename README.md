@@ -40,13 +40,13 @@ Freenode - #cuba.rb - 2012/10/30 15:20 UYT
 Depends on Redis 2.6 for the `bitop` operation. You can install it using:
 
 ```bash
-brew install --devel redis
+brew install redis
 ```
 
 or upgrading your current version:
 
 ```bash
-brew upgrade --devel redis
+brew upgrade redis
 ```
 
 And then install the gem
