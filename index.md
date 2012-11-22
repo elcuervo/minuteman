@@ -14,6 +14,11 @@ during the American Revolutionary War. _They provided a highly mobile, rapidly
 deployed force that allowed the colonies to respond immediately to war threats,
 hence the name._
 
+## What makes it so fast?
+
+Redis makes it fast, stupid fast. The core concept of using bit arrays to store
+information plus the nuclear tornado that powers Redis makes the mixture a fast
+and furious way to store analytics.
 
 ## What's the idea behind it?
 
@@ -21,9 +26,9 @@ It's all about the bytes, well, actually it's all about Redis.
 Since Redis 2.6 bit operations are part of this great db and that inspired
 different people. Thanks to them I've built Minuteman:
 
-* http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/
-* http://amix.dk/blog/post/19714
-* http://en.wikipedia.org/wiki/Bit_array
+* [http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/](http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/)
+* [http://amix.dk/blog/post/19714](http://amix.dk/blog/post/19714)
+* [http://en.wikipedia.org/wiki/Bit_array](http://en.wikipedia.org/wiki/Bit_array)
 
 ## Getting started
 
@@ -51,33 +56,32 @@ Let's go through bit operations once again:
 
 Having our users represented as marked bits gives us access to bit operations:
 
-### AND - `&`
+### AND: `&`
 
 <figure>
   <img src="img/bits/bitwise-and.png" alt="" />
   <figcaption> Now let's imagine our first bit array represents users who get an email invitation and the other set represents the users who bought our product. Then we can find out the intersection of them.  </figcaption>
 </figure>
 
-### OR - `|`
+### OR: `|`
 
 <figure>
   <img src="img/bits/bitwise-or.png" alt="" />
   <figcaption> We can imagine the same but joining two sets to do another operation afterwards </figcaption>
 </figure>
 
-### XOR - `^`
+### XOR: `^`
 
 <figure>
   <img src="img/bits/bitwise-xor.png" alt="" />
   <figcaption> The exclusive or aka XOR will behave like OR but ignoring the common bits.  </figcaption>
 </figure>
 
-### NOT - `~`
+### NOT: `~`
 
 <figure>
   <img src="img/bits/bitwise-not.png" alt="" />
   <figcaption> This will reverse the marked bits </figcaption>
 </figure>
 
-Pictures from <small>http://www.micahcarrick.com/tutorials/avr-microcontroller-tutorial/avr-c-programming.html</small>
-
+Pictures from <small><a href="http://www.micahcarrick.com/tutorials/avr-microcontroller-tutorial/avr-c-programming.html">http://www.micahcarrick.com/tutorials/avr-microcontroller-tutorial/avr-c-programming.html</a></small>
