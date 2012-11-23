@@ -83,7 +83,7 @@ class Minuteman
       #
       def caching
         executed_class = yield
-        cache[other] = executed_class if other.is_a?(Array)
+        cache[other] = executed_class if other.is_a?(Array) && !ENV["NOCACHE"]
         executed_class
       end
 
