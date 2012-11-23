@@ -73,13 +73,19 @@ class Minuteman
       redis.getbit(key, id) == 1
     end
 
-    # Private: executes an operation between the current timespan and another
+    # Private: Cxecutes an operation between the current timespan and another
     #
     #   type:     The operation type
     #   timespan: The given timespan
     #
     def operation(type, timespan)
-      Operation.new(redis, type, self, timespan).call
+      operate.call(type, timespan)
+    end
+
+    # Private: Memoizes the operation class
+    #
+    def operate
+      @_operate ||= Operation.new(redis, self)
     end
   end
 end

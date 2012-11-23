@@ -25,7 +25,10 @@ class Minuteman
           redis.getbit(source_key, id) == 1
         end
 
-        intersected_data.each { |id| redis.setbit(key, id, 1) }
+        if !redis.exists(key)
+          intersected_data.each { |id| redis.setbit(key, id, 1) }
+        end
+
         Data.new(redis, key, intersected_data)
       end
     end

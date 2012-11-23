@@ -152,7 +152,7 @@ describe Minuteman do
     assert_equal [43], ids
   end
 
-  it "a resulting set with data should behave like an array" do
+  it "should return a set with data that behaves like an array" do
     ids = @week_events & [2, 12, 43]
 
     assert_kind_of Enumerator, ids.each

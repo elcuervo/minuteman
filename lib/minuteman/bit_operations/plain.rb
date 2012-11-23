@@ -22,6 +22,7 @@ class Minuteman
 
         key = destination_key(type, events)
         redis.bitop(type, key, events)
+
         Result.new(redis, key)
       end
     end
