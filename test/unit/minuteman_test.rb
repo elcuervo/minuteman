@@ -5,8 +5,8 @@ describe Minuteman do
     @analytics = Minuteman.new
 
     today = Time.now.utc
-    last_month = today - (3600 * 24 * 30)
-    last_week =  today - (3600 * 24 * 7)
+    last_month  = today - (3600 * 24 * 30)
+    last_week   = today - (3600 * 24 * 7)
     last_minute = today - 120
 
     @analytics.mark("login", 12)
