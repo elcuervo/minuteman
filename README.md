@@ -71,16 +71,16 @@ analytics.mark("login:successful", other_user.id)
 # Mark in bulk
 analytics.mark("programming:love:ruby", User.where(favorite: "ruby").pluck(:id))
 
-# Fetch events for a given time
+# Fetch events for a given time (default is Time.now.utc)
 today_events = analytics.day("login:successful", Time.now.utc)
 
 # This also exists
-analytics.year("login:successful", Time.now.utc)
-analytics.month("login:successful", Time.now.utc)
-analytics.week("login:successful", Time.now.utc)
-analytics.day("login:successful", Time.now.utc)
-analytics.hour("login:successful", Time.now.utc)
-analytics.minute("login:successful", Time.now.utc)
+analytics.year("login:successful")
+analytics.month("login:successful")
+analytics.week("login:successful")
+analytics.day("login:successful")
+analytics.hour("login:successful")
+analytics.minute("login:successful")
 
 # Lists all the tracked events
 analytics.events
@@ -138,8 +138,8 @@ Currently the supported commands to interact with arrays are `&` and `-`
 ### Example
 
 ```ruby
-invited = analytics.month("email:invitation", Time.now.utc)
-successful_buys = analytics.month("buy:complete", Time.now.utc)
+invited = analytics.month("email:invitation")
+successful_buys = analytics.month("buy:complete")
 
 successful_buys_after_invitation = invited & successful_buys
 successful_buys_after_invitation.include?(user.id)
