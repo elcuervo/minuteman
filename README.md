@@ -1,3 +1,5 @@
+![Minuteman](http://elcuervo.github.com/minuteman/img/minuteman-readme.png)
+
 # Minuteman
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/elcuervo/minuteman)
 [![Build Status](https://secure.travis-ci.org/elcuervo/minuteman.png?branch=master)](https://travis-ci.org/elcuervo/minuteman)
@@ -7,10 +9,6 @@ militia companies of select men from the American colonial partisan militia
 during the American Revolutionary War. _They provided a highly mobile, rapidly
 deployed force that allowed the colonies to respond immediately to war threats,
 hence the name._
-
-![Minuteman](http://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg/220px-Minute_Man_Statue_Lexington_Massachusetts_cropped.jpg)
-
-Fast analytics using Redis bitwise operations
 
 ## Origin
 Freenode - #cuba.rb - 2012/10/30 15:20 UYT
