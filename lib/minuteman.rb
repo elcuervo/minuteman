@@ -36,7 +36,10 @@ class Minuteman
   #   date       - A Time object used to do the search
   #
   %w[year month week day hour minute].each do |method_name|
-    define_method(method_name) do |event_name, date|
+    define_method(method_name) do |*args|
+      event_name, date = *args
+      date ||= Time.now.utc
+
       constructor = self.class.const_get(method_name.capitalize)
       constructor.new(@redis, event_name, date)
     end
