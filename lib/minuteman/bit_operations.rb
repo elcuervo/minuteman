@@ -1,5 +1,7 @@
 require "minuteman/bit_operations/operation"
 
+# Public: Minuteman core classs
+#
 class Minuteman
   module BitOperations
     # Public: Checks for the existance of ids on a given set

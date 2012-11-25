@@ -1,5 +1,7 @@
 require "minuteman/time_spans"
 
+# Public: Minuteman core classs
+#
 class Minuteman
   module TimeEvents
     # Public: Helper to get all the time trackers ready

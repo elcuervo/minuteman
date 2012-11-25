@@ -1,4 +1,8 @@
+# Public: Minuteman core classs
+#
 class Minuteman
+  # Public: Minute TimeSpan class
+  #
   class Minute < TimeSpan
     private
 

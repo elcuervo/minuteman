@@ -1,6 +1,8 @@
 require "minuteman/keys_methods"
 require "minuteman/bit_operations/data"
 
+# Public: Minuteman core classs
+#
 class Minuteman
   module BitOperations
     # Public: The class to handle operations with datasets

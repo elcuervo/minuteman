@@ -1,4 +1,8 @@
+# Public: Minuteman core classs
+#
 class Minuteman
+  # Public: Month TimeSpan class
+  #
   class Month < TimeSpan
     private
 

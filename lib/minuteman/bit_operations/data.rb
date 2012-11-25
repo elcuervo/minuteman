@@ -1,5 +1,7 @@
 require "minuteman/bit_operations"
 
+# Public: Minuteman core classs
+#
 class Minuteman
   module BitOperations
     # Public: The conversion of an array to an operable class

@@ -1,6 +1,10 @@
 require "minuteman/bit_operations"
 
+# Public: Minuteman core classs
+#
 class Minuteman
+  # Public: The timespan class. All the time span classes inherit from this one
+  #
   class TimeSpan
     include BitOperations
 

@@ -1,6 +1,8 @@
 require "minuteman/bit_operations/plain"
 require "minuteman/bit_operations/with_data"
 
+# Public: Minuteman core classs
+#
 class Minuteman
   module BitOperations
     # Public: Handles the operations between two timespans

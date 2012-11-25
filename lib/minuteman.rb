@@ -17,6 +17,8 @@ class Redis
   end
 end
 
+# Public: Minuteman core classs
+#
 class Minuteman
   attr_reader :redis
 
@@ -41,7 +43,7 @@ class Minuteman
       date ||= Time.now.utc
 
       constructor = self.class.const_get(method_name.capitalize)
-      constructor.new(@redis, event_name, date)
+      constructor.new(redis, event_name, date)
     end
   end
 
@@ -60,41 +62,50 @@ class Minuteman
     event_time = time.kind_of?(Time) ? time : Time.parse(time.to_s)
     time_events = TimeEvents.start(redis, event_name, event_time)
 
-    @redis.multi do
-      time_events.each do |event|
-        Array(ids).each { |id| redis.setbit(event.key, id, 1) }
-      end
-    end
+    mark_events(time_events, Array(ids))
   end
 
   # Public: List all the events given the minuteman namespace
   #
   def events
-    keys = @redis.keys([PREFIX, "*", "????"].join("_"))
+    keys = redis.keys([PREFIX, "*", "????"].join("_"))
     keys.map { |key| key.split("_")[1] }
   end
 
   # Public: List all the operations executed in a given the minuteman namespace
   #
   def operations
-    @redis.keys([operations_cache_key_prefix, "*"].join("_"))
+    redis.keys([operations_cache_key_prefix, "*"].join("_"))
   end
 
   # Public: Resets the bit operation cache keys
   #
   def reset_operations_cache
-    keys = @redis.keys([operations_cache_key_prefix, "*"].join("_"))
-    @redis.del(keys) if keys.any?
+    keys = redis.keys([operations_cache_key_prefix, "*"].join("_"))
+    redis.del(keys) if keys.any?
   end
 
   # Public: Resets all the used keys
   #
   def reset_all
-    keys = @redis.keys([PREFIX, "*"].join("_"))
-    @redis.del(keys) if keys.any?
+    keys = redis.keys([PREFIX, "*"].join("_"))
+    redis.del(keys) if keys.any?
   end
 
   private
+
+  # Private: Marks ids for a given time events
+  #
+  #  time_events: A set of TimeEvents
+  #  ids:         The ids to be marked
+  #
+  def mark_events(time_events, ids)
+    redis.multi do
+      time_events.each do |event|
+        ids.each { |id| redis.setbit(event.key, id, 1) }
+      end
+    end
+  end
 
   # Private: The prefix key of all the operations
   #

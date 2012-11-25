@@ -1,3 +1,5 @@
+# Public: Minuteman core classs
+#
 class Minuteman
   module KeysMethods
     BIT_OPERATION_PREFIX = "bitop"
