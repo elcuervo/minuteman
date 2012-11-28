@@ -73,14 +73,14 @@ class Minuteman
   # Examples
   #
   #   analytics = Minuteman.new
-  #   analytics.mark("login", 1)
-  #   analytics.mark("login", [2, 3, 4])
+  #   analytics.track("login", 1)
+  #   analytics.track("login", [2, 3, 4])
   #
-  def mark(event_name, ids, time = Time.now.utc)
+  def track(event_name, ids, time = Time.now.utc)
     event_time = time.kind_of?(Time) ? time : Time.parse(time.to_s)
     time_events = TimeEvents.start(event_name, event_time)
 
-    mark_events(time_events, Array(ids))
+    track_events(time_events, Array(ids))
   end
 
   # Public: List all the events given the minuteman namespace
@@ -138,9 +138,9 @@ class Minuteman
   # Private: Marks ids for a given time events
   #
   #  time_events: A set of TimeEvents
-  #  ids:         The ids to be marked
+  #  ids:         The ids to be tracked
   #
-  def mark_events(time_events, ids)
+  def track_events(time_events, ids)
     safe_multi do
       time_events.each do |event|
         ids.each { |id| safe { redis.setbit(event.key, id, 1) } }

@@ -76,11 +76,11 @@ analytics = Minuteman.new
 analytics = Minuteman.new(redis: Redis::Namespace.new(:mm, redis: Redis.new))
 
 # Mark an event for a given id
-analytics.mark("login:successful", user.id)
-analytics.mark("login:successful", other_user.id)
+analytics.track("login:successful", user.id)
+analytics.track("login:successful", other_user.id)
 
 # Mark in bulk
-analytics.mark("programming:love:ruby", User.where(favorite: "ruby").pluck(:id))
+analytics.track("programming:love:ruby", User.where(favorite: "ruby").pluck(:id))
 
 # Fetch events for a given time (default is Time.now.utc)
 today_events = analytics.day("login:successful", Time.now.utc)
@@ -134,7 +134,7 @@ set1 ^ set2
 Let's assume this scenario:
 
 You have a list of users and want to know which of them have been going throught
-some of the marks you made.
+some of the tracks you made.
 
 ```ruby
 paid = analytics.month("buy:complete")

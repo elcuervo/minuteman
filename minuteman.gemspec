@@ -4,6 +4,7 @@ Gem::Specification.new do |s|
   s.summary           = "Bit Analytics"
   s.description       = "Fast and furious tracking system using Redis bitwise operations"
   s.authors           = ["elcuervo"]
+  s.licenses          = ["MIT"]
   s.email             = ["yo@brunoaguirre.com"]
   s.homepage          = "http://github.com/elcuervo/minuteman"
   s.files             = `git ls-files`.split("\n")

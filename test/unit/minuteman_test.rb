@@ -9,10 +9,10 @@ describe Minuteman do
     last_week   = today - (3600 * 24 * 7)
     last_minute = today - 120
 
-    @analytics.mark("login", 12)
-    @analytics.mark("login", [2, 42])
-    @analytics.mark("login", 2, last_week)
-    @analytics.mark("login:successful", 567, last_month)
+    @analytics.track("login", 12)
+    @analytics.track("login", [2, 42])
+    @analytics.track("login", 2, last_week)
+    @analytics.track("login:successful", 567, last_month)
 
     @year_events   = @analytics.year("login", today)
     @week_events   = @analytics.week("login", today)
@@ -204,14 +204,14 @@ describe "Changing Minuteman redis connections" do
   it "should fail silently" do
     minuteman = Minuteman.new(silent: true, redis: { port: 1234 })
 
-    minuteman.mark("test", 1)
+    minuteman.track("test", 1)
   end
 
   it "should fail loudly" do
     minuteman = Minuteman.new(redis: { port: 1234 })
 
     assert_raises Redis::CannotConnectError do
-      minuteman.mark("test", 1)
+      minuteman.track("test", 1)
     end
   end
 end
