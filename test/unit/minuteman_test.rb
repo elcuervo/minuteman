@@ -200,4 +200,18 @@ describe "Changing Minuteman redis connections" do
     assert_equal namespace, Minuteman.redis
     assert_equal namespace, minuteman.redis
   end
+
+  it "should fail silently" do
+    minuteman = Minuteman.new(silent: true, redis: { port: 1234 })
+
+    minuteman.mark("test", 1)
+  end
+
+  it "should fail loudly" do
+    minuteman = Minuteman.new(redis: { port: 1234 })
+
+    assert_raises Redis::CannotConnectError do
+      minuteman.mark("test", 1)
+    end
+  end
 end

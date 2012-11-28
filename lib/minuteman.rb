@@ -25,11 +25,19 @@ class Minuteman
 
   class << self
     attr_accessor :redis, :options
+
+    # Public: Prevents a fatal error if the options are set to silent
+    #
+    def safe(&block)
+      yield if block
+    rescue Redis::BaseError => e
+      raise e unless options[:silent]
+    end
   end
 
   PREFIX = "minuteman"
 
-  def_delegators self, :redis, :redis=, :options, :options=
+  def_delegators self, :redis, :redis=, :options, :options=, :safe
 
   # Public: Initializes Minuteman
   #
@@ -78,34 +86,39 @@ class Minuteman
   # Public: List all the events given the minuteman namespace
   #
   def events
-    keys = redis.keys([PREFIX, "*", "????"].join("_"))
+    keys = safe { redis.keys([PREFIX, "*", "????"].join("_")) }
     keys.map { |key| key.split("_")[1] }
   end
 
   # Public: List all the operations executed in a given the minuteman namespace
   #
   def operations
-    redis.keys([operations_cache_key_prefix, "*"].join("_"))
+    safe { redis.keys([operations_cache_key_prefix, "*"].join("_")) }
   end
 
   # Public: Resets the bit operation cache keys
   #
   def reset_operations_cache
-    keys = redis.keys([operations_cache_key_prefix, "*"].join("_"))
-    redis.del(keys) if keys.any?
+    keys = safe { redis.keys([operations_cache_key_prefix, "*"].join("_")) }
+    safe { redis.del(keys) } if keys.any?
   end
 
   # Public: Resets all the used keys
   #
   def reset_all
-    keys = redis.keys([PREFIX, "*"].join("_"))
-    redis.del(keys) if keys.any?
+    keys = safe { redis.keys([PREFIX, "*"].join("_")) }
+    safe { redis.del(keys) } if keys.any?
   end
 
   private
 
+  # Private: Default configuration options
+  #
   def default_options
-    { cache: true }
+    {
+      cache:  true,
+      silent: false
+    }
   end
 
   # Private: Determines to use or instance a Redis connection
@@ -128,11 +141,17 @@ class Minuteman
   #  ids:         The ids to be marked
   #
   def mark_events(time_events, ids)
-    redis.multi do
+    safe_multi do
       time_events.each do |event|
-        ids.each { |id| redis.setbit(event.key, id, 1) }
+        ids.each { |id| safe { redis.setbit(event.key, id, 1) } }
       end
     end
+  end
+
+  # Private: Executes a block within a safe connection using redis.multi
+  #
+  def safe_multi(&block)
+    safe { redis.multi(&block) }
   end
 
   # Private: The prefix key of all the operations

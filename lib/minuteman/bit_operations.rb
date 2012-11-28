@@ -4,6 +4,10 @@ require "minuteman/bit_operations/operation"
 #
 class Minuteman
   module BitOperations
+    extend Forwardable
+
+    def_delegators :Minuteman, :safe, :redis
+
     # Public: Checks for the existance of ids on a given set
     #
     #   ids - Array of ids
@@ -16,13 +20,13 @@ class Minuteman
     # Public: Resets the current key
     #
     def reset
-      Minuteman.redis.rem(key)
+      safe { redis.rem(key) }
     end
 
     # Public: Cheks for the amount of ids stored on the current key
     #
     def length
-      Minuteman.redis.bitcount(key)
+      safe { redis.bitcount(key) }
     end
 
     # Public: Calculates the NOT of the current key
@@ -72,7 +76,7 @@ class Minuteman
     #   id: The bit
     #
     def getbit(id)
-      Minuteman.redis.getbit(key, id) == 1
+      safe { redis.getbit(key, id) == 1 }
     end
 
     # Private: Cxecutes an operation between the current timespan and another

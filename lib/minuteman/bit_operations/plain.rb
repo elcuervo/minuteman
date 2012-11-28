@@ -12,7 +12,10 @@ class Minuteman
     #   source_key: The original key to do the operation
     #
     class Plain < Struct.new(:type, :timespan, :source_key)
+      extend Forwardable
       include KeysMethods
+
+      def_delegators :Minuteman, :redis, :safe
 
       def call
         events = if source_key == timespan
@@ -22,7 +25,7 @@ class Minuteman
                  end
 
         key = destination_key(type, events)
-        Minuteman.redis.bitop(type, key, events)
+        safe { redis.bitop(type, key, events) }
 
         Result.new(key)
       end

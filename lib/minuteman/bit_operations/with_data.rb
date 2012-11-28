@@ -12,13 +12,16 @@ class Minuteman
     #   source_key: The original key to do the operation
     #
     class WithData < Struct.new(:type, :data, :source_key)
+      extend Forwardable
       include KeysMethods
+
+      def_delegators :Minuteman, :redis, :safe
 
       def call
         key = destination_key("data-#{type}", normalized_data)
 
-        if !Minuteman.redis.exists(key)
-          intersected_data.each { |id| Minuteman.redis.setbit(key, id, 1) }
+        if !safe { redis.exists(key) }
+          intersected_data.each { |id| safe { redis.setbit(key, id, 1) } }
         end
 
         Data.new(key, intersected_data)
