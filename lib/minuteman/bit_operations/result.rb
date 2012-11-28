@@ -6,10 +6,9 @@ class Minuteman
   module BitOperations
     # Public: The result of intersecting results
     #
-    #   redis   - The Redis connection
     #   key     - The key where the result it's stored
     #
-    class Result < Struct.new(:redis, :key)
+    class Result < Struct.new(:key)
       include BitOperations
     end
   end

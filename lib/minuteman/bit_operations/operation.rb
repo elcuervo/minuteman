@@ -7,12 +7,11 @@ class Minuteman
   module BitOperations
     # Public: Handles the operations between two timespans
     #
-    #   redis:      The Redis connection
     #   type:       The operation type
     #   timespan:   One of the timespans to be permuted
     #   other:      The other timespan to be permuted
     #
-    class Operation < Struct.new(:redis, :timespan)
+    class Operation < Struct.new(:timespan)
       # Public: Caches operations against Array
       #
       class Cache
@@ -70,7 +69,7 @@ class Minuteman
         return minus_operation  if type == "MINUS" && operable?
         return cache[other]     if cache.include?(other)
 
-        caching { klass.new(redis, type, other, timespan.key).call }
+        caching { klass.new(type, other, timespan.key).call }
       end
 
       private

@@ -16,13 +16,13 @@ class Minuteman
     # Public: Resets the current key
     #
     def reset
-      redis.rem(key)
+      Minuteman.redis.rem(key)
     end
 
     # Public: Cheks for the amount of ids stored on the current key
     #
     def length
-      redis.bitcount(key)
+      Minuteman.redis.bitcount(key)
     end
 
     # Public: Calculates the NOT of the current key
@@ -72,7 +72,7 @@ class Minuteman
     #   id: The bit
     #
     def getbit(id)
-      redis.getbit(key, id) == 1
+      Minuteman.redis.getbit(key, id) == 1
     end
 
     # Private: Cxecutes an operation between the current timespan and another
@@ -87,7 +87,7 @@ class Minuteman
     # Private: Memoizes the operation class
     #
     def operate
-      @_operate ||= Operation.new(redis, self)
+      @_operate ||= Operation.new(self)
     end
   end
 end

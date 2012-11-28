@@ -8,19 +8,17 @@ class Minuteman
   class TimeSpan
     include BitOperations
 
-    attr_reader :key, :redis
+    attr_reader :key
 
     DATE_FORMAT = "%s-%02d-%02d"
     TIME_FORMAT = "%02d:%02d"
 
     # Public: Initializes the base TimeSpan class
     #
-    #   redis      - The Redis connection
     #   event_name - The event to be tracked
     #   date       - A given Time object
     #
-    def initialize(redis, event_name, date)
-      @redis = redis
+    def initialize(event_name, date)
       @key = build_key(event_name, time_format(date))
     end
 

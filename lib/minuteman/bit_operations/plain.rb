@@ -7,12 +7,11 @@ class Minuteman
   module BitOperations
     # Public: The class to handle operations with others timespans
     #
-    #   redis:      The Redis connection
     #   type:       The operation type
     #   timespan:   The timespan to be permuted
     #   source_key: The original key to do the operation
     #
-    class Plain < Struct.new(:redis, :type, :timespan, :source_key)
+    class Plain < Struct.new(:type, :timespan, :source_key)
       include KeysMethods
 
       def call
@@ -23,9 +22,9 @@ class Minuteman
                  end
 
         key = destination_key(type, events)
-        redis.bitop(type, key, events)
+        Minuteman.redis.bitop(type, key, events)
 
-        Result.new(redis, key)
+        Result.new(key)
       end
     end
   end

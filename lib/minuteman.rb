@@ -20,7 +20,7 @@ end
 # Public: Minuteman core classs
 #
 class Minuteman
-  attr_reader :redis
+  class << self; attr_accessor :redis end
 
   PREFIX = "minuteman"
 
@@ -29,7 +29,13 @@ class Minuteman
   # options - The hash to be sent to Redis.new
   #
   def initialize(options = {})
-    @redis = Redis.new(options)
+    self.class.redis = Redis.new(options.fetch(:redis, {}))
+  end
+
+  # Public: Helper method to access the redis class method
+  #
+  def redis
+    self.class.redis
   end
 
   # Public: Generates the methods to fech data
@@ -43,7 +49,7 @@ class Minuteman
       date ||= Time.now.utc
 
       constructor = self.class.const_get(method_name.capitalize)
-      constructor.new(redis, event_name, date)
+      constructor.new(event_name, date)
     end
   end
 
@@ -60,7 +66,7 @@ class Minuteman
   #
   def mark(event_name, ids, time = Time.now.utc)
     event_time = time.kind_of?(Time) ? time : Time.parse(time.to_s)
-    time_events = TimeEvents.start(redis, event_name, event_time)
+    time_events = TimeEvents.start(event_name, event_time)
 
     mark_events(time_events, Array(ids))
   end

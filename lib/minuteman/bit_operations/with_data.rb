@@ -7,22 +7,21 @@ class Minuteman
   module BitOperations
     # Public: The class to handle operations with datasets
     #
-    #   redis:      The Redis connection
     #   type:       The operation type
     #   data:       The data to be permuted
     #   source_key: The original key to do the operation
     #
-    class WithData < Struct.new(:redis, :type, :data, :source_key)
+    class WithData < Struct.new(:type, :data, :source_key)
       include KeysMethods
 
       def call
         key = destination_key("data-#{type}", normalized_data)
 
-        if !redis.exists(key)
-          intersected_data.each { |id| redis.setbit(key, id, 1) }
+        if !Minuteman.redis.exists(key)
+          intersected_data.each { |id| Minuteman.redis.setbit(key, id, 1) }
         end
 
-        Data.new(redis, key, intersected_data)
+        Data.new(key, intersected_data)
       end
 
       private
@@ -45,7 +44,9 @@ class Minuteman
       # Private: The intersected data depending on the command executed
       #
       def intersected_data
-        normalized_data.send(command) { |id| redis.getbit(source_key, id) == 1 }
+        normalized_data.send(command) do |id|
+          Minuteman.redis.getbit(source_key, id) == 1
+        end
       end
     end
   end
