@@ -3,8 +3,6 @@ require "minitest/benchmark"
 
 describe Minuteman do
   before do
-    ENV.delete("NOCACHE")
-
     today     = Time.now.utc
     last_week = today - (3600 * 24 * 7)
 
@@ -33,7 +31,7 @@ describe Minuteman do
   end
 
   bench_performance_constant "intersections not using cache" do
-    ENV["NOCACHE"] = "true"
+    @analytics.options.merge! cache: false
     5.times { @week_events & [2, 12, 43] }
   end
 end

@@ -1,5 +1,6 @@
 require "redis"
 require "time"
+require "forwardable"
 require "minuteman/time_events"
 
 # Until redis gem gets updated
@@ -20,30 +21,25 @@ end
 # Public: Minuteman core classs
 #
 class Minuteman
-  class << self; attr_accessor :redis end
+  extend Forwardable
+
+  class << self
+    attr_accessor :redis, :options
+  end
 
   PREFIX = "minuteman"
+
+  def_delegators self, :redis, :redis=, :options, :options=
 
   # Public: Initializes Minuteman
   #
   #   options - The hash to be sent to Redis.new
   #
   def initialize(options = {})
-    self.redis = define_connection(options.fetch(:redis, {}))
-  end
+    redis_options = options.delete(:redis) || {}
 
-  # Public: Helper method to access the redis class method
-  #
-  def redis
-    self.class.redis
-  end
-
-  # Public: Helper method to change the redis connection
-  #
-  #   connection - The new redis connection
-  #
-  def redis=(connection)
-    self.class.redis = connection
+    self.options = default_options.merge! options
+    self.redis = define_connection(redis_options)
   end
 
   # Public: Generates the methods to fech data
@@ -107,6 +103,10 @@ class Minuteman
   end
 
   private
+
+  def default_options
+    { cache: true }
+  end
 
   # Private: Determines to use or instance a Redis connection
   #

@@ -162,7 +162,14 @@ describe Minuteman do
 end
 
 describe "Using options" do
+  it "should be able to stop using the cache" do
+    minuteman = Minuteman.new
+    assert_equal true, minuteman.options[:cache]
 
+    minuteman.options[:cache] = false
+
+    assert_equal false, minuteman.options[:cache]
+  end
 end
 
 describe "Changing Minuteman redis connections" do

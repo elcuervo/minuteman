@@ -84,7 +84,9 @@ class Minuteman
       #
       def caching
         executed_class = yield
-        cache[other] = executed_class if other.is_a?(Array) && !ENV["NOCACHE"]
+        if other.is_a?(Array) && !Minuteman.options[:cache]
+          cache[other] = executed_class
+        end
         executed_class
       end
 
