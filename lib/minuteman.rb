@@ -26,16 +26,24 @@ class Minuteman
 
   # Public: Initializes Minuteman
   #
-  # options - The hash to be sent to Redis.new
+  #   options - The hash to be sent to Redis.new
   #
   def initialize(options = {})
-    self.class.redis = Redis.new(options.fetch(:redis, {}))
+    self.redis = define_connection(options.fetch(:redis, {}))
   end
 
   # Public: Helper method to access the redis class method
   #
   def redis
     self.class.redis
+  end
+
+  # Public: Helper method to change the redis connection
+  #
+  #   connection - The new redis connection
+  #
+  def redis=(connection)
+    self.class.redis = connection
   end
 
   # Public: Generates the methods to fech data
@@ -99,6 +107,20 @@ class Minuteman
   end
 
   private
+
+  # Private: Determines to use or instance a Redis connection
+  #
+  #  object: Can be the options to instance a Redis connection or a connection
+  #          itself
+  #
+  def define_connection(object)
+    case object
+    when Redis, Redis::Namespace
+      object
+    else
+      Redis.new(object)
+    end
+  end
 
   # Private: Marks ids for a given time events
   #

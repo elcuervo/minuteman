@@ -160,3 +160,37 @@ describe Minuteman do
     assert_equal 2, ids.size
   end
 end
+
+describe "Using options" do
+
+end
+
+describe "Changing Minuteman redis connections" do
+  it "should support using a Redis instance" do
+    redis = Redis.new
+    minuteman = Minuteman.new(redis: redis)
+
+    assert_equal redis, Minuteman.redis
+    assert_equal redis, minuteman.redis
+  end
+
+  it "should support changing the current connection" do
+    redis = Redis.new
+    minuteman = Minuteman.new
+
+    assert redis != Minuteman.redis
+
+    minuteman.redis = redis
+
+    assert_equal redis, minuteman.redis
+  end
+
+  it "should support Redis::Namespace" do
+    namespace = Redis::Namespace.new(:ns, redis: Redis.new)
+
+    minuteman = Minuteman.new(redis: namespace)
+
+    assert_equal namespace, Minuteman.redis
+    assert_equal namespace, minuteman.redis
+  end
+end
