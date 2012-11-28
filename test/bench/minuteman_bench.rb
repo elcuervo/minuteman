@@ -31,7 +31,7 @@ describe Minuteman do
   end
 
   bench_performance_constant "intersections not using cache" do
-    @analytics.options.merge! cache: false
+    @analytics.options[:cache] = false
     5.times { @week_events & [2, 12, 43] }
   end
 end
