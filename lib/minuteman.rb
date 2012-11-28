@@ -33,12 +33,12 @@ class Minuteman
 
   # Public: Initializes Minuteman
   #
-  #   options - The hash to be sent to Redis.new
+  #   options - An options hash to change how Minuteman behaves
   #
   def initialize(options = {})
     redis_options = options.delete(:redis) || {}
 
-    self.options = default_options.merge! options
+    self.options = default_options.merge!(options)
     self.redis = define_connection(redis_options)
   end
 

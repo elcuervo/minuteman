@@ -87,6 +87,7 @@ class Minuteman
         if other.is_a?(Array) && Minuteman.options[:cache]
           cache[other] = executed_class
         end
+
         executed_class
       end
 
