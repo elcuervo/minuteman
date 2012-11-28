@@ -59,8 +59,11 @@ gem install minuteman
 ```ruby
 require "minuteman"
 
-# Accepts an options hash that will be sent as is to Redis.new
+# Accepts an options[:redis] hash that will be sent as is to Redis.new
 analytics = Minuteman.new
+
+# You can also reuse your Redis or Redis::Namespace connection
+analytics = Minuteman.new(redis: Redis::Namespace.new(:mm, redis: Redis.new))
 
 # Mark an event for a given id
 analytics.mark("login:successful", user.id)
