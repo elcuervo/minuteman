@@ -56,6 +56,16 @@ gem install minuteman
 
 ## Usage
 
+Currently Minutemen supports two options `:silent (default: false)` and `:redis
+(default: {})`
+
+### Options
+
+**silent**: when `true` the operations will not raise errors to prevent failures
+
+**redis**: can be a Hash with the options to be sent to `Redis.new` or a `Redis`
+connection already established (`Redis::Namespace` works as well).
+
 ```ruby
 require "minuteman"
 
