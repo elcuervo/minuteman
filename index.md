@@ -46,6 +46,13 @@ different people. Thanks to them I've built Minuteman:
 
 <script src="https://gist.github.com/4120070.js?file=minuteman_operations.rb"></script>
 
+<figure>
+  <img src="img/simple-intersection.png" alt="" />
+  <img src="img/complex-intersection.png" alt="" />
+  <figcaption> This is the Veen representation of the operation, the power off
+  Minuteman It's the ablitity to merge and substract groups. </figcaption>
+</figure>
+
 ### What can I do if I want to join it with my User table?
 
 <script src="https://gist.github.com/4120070.js?file=minuteman_array.rb"></script>
