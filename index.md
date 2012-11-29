@@ -22,6 +22,10 @@ and furious way to store analytics.
 
 <script src="https://gist.github.com/4120070.js?file=benchmarks.txt"></script>
 
+## I use Rails, is there a fast way to use it?
+
+[YES](https://github.com/elcuervo/minuteman-rails)
+
 ## What's the idea behind it?
 
 It's all about the bytes, well, actually it's all about Redis.
