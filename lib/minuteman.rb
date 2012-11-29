@@ -128,7 +128,7 @@ class Minuteman
   #
   def define_connection(object)
     case object
-    when Redis, Redis::Namespace
+    when Redis, defined?(Redis::Namespace) && Redis::Namespace
       object
     else
       Redis.new(object)
