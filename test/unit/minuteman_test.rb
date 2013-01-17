@@ -172,6 +172,26 @@ describe "Using options" do
   end
 end
 
+describe "Changing the Minuteman time spans" do
+  it "should be able to change the span and ignore minute" do
+    time_spans = %w[year month day hour]
+    minuteman = Minuteman.new(time_spans: time_spans)
+
+    minuteman.track("login", 12)
+
+    assert_equal 4, minuteman.redis.keys.size
+    assert_equal time_spans, minuteman.options[:time_spans]
+
+    assert minuteman.respond_to?(:year)
+    assert minuteman.respond_to?(:month)
+    assert minuteman.respond_to?(:day)
+    assert minuteman.respond_to?(:hour)
+
+    assert !minuteman.respond_to?(:minute)
+    assert !minuteman.respond_to?(:week)
+  end
+end
+
 describe "Changing Minuteman redis connections" do
   it "should support using a Redis instance" do
     redis = Redis.new

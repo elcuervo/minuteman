@@ -48,21 +48,9 @@ class Minuteman
 
     self.options = default_options.merge!(options)
     self.redis = define_connection(redis_options)
-  end
 
-  # Public: Generates the methods to fech data
-  #
-  #   event_name - The event name to be searched for
-  #   date       - A Time object used to do the search
-  #
-  %w[year month week day hour minute].each do |method_name|
-    define_method(method_name) do |*args|
-      event_name, date = *args
-      date ||= Time.now.utc
-
-      constructor = self.class.const_get(method_name.capitalize)
-      constructor.new(event_name, date)
-    end
+    spans = self.options.fetch(:time_spans, %w[year month week day hour minute])
+    @time_spans = generate_spans(spans)
   end
 
   # Public: Marks an id to a given event on a given time
@@ -78,7 +66,7 @@ class Minuteman
   #
   def track(event_name, ids, time = Time.now.utc)
     event_time = time.kind_of?(Time) ? time : Time.parse(time.to_s)
-    time_events = TimeEvents.start(event_name, event_time)
+    time_events = TimeEvents.start(@time_spans, event_name, event_time)
 
     track_events(time_events, Array(ids))
   end
@@ -111,6 +99,25 @@ class Minuteman
   end
 
   private
+
+  # Public: Generates the methods to fech data
+  #
+  #   spans: An array of timespans corresponding to a TimeSpan class
+  #
+  def generate_spans(spans)
+    spans.map do |method_name|
+      constructor = self.class.const_get(method_name.capitalize)
+
+      define_singleton_method(method_name) do |*args|
+        event_name, date = *args
+        date ||= Time.now.utc
+
+        constructor.new(event_name, date)
+      end
+
+      constructor
+    end
+  end
 
   # Private: Default configuration options
   #
