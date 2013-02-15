@@ -7,9 +7,9 @@ describe Minuteman do
     last_week = today - (3600 * 24 * 7)
 
     @analytics = Minuteman.new
-    @analytics.mark("login", 12)
-    @analytics.mark("login", [2, 42])
-    @analytics.mark("login:successful", 567, last_week)
+    @analytics.track("login", 12)
+    @analytics.track("login", [2, 42])
+    @analytics.track("login:successful", 567, last_week)
 
     @week_events       = @analytics.week("login")
     @last_week_events  = @analytics.week("login", last_week)
