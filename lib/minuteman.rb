@@ -3,21 +3,6 @@ require "time"
 require "forwardable"
 require "minuteman/time_events"
 
-# Until redis gem gets updated
-class Redis
-  def bitop(operation, destkey, *keys)
-    synchronize do |client|
-      client.call([:bitop, operation, destkey] + keys)
-    end
-  end
-
-  def bitcount(key, start = 0, stop = -1)
-    synchronize do |client|
-      client.call([:bitcount, key, start, stop])
-    end
-  end
-end
-
 # Public: Minuteman core classs
 #
 class Minuteman

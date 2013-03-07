@@ -2,14 +2,14 @@ PATH
   remote: .
   specs:
     minuteman (1.0.2)
-      redis (~> 3.0.2)
+      redis (~> 3.0.3)
 
 GEM
   remote: http://rubygems.org/
   specs:
     minitest (4.2.0)
     rake (0.9.2.2)
-    redis (3.0.2)
+    redis (3.0.3)
     redis-namespace (1.2.1)
       redis (~> 3.0.0)
 
