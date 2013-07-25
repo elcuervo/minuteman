@@ -107,10 +107,7 @@ class Minuteman
   # Private: Default configuration options
   #
   def default_options
-    {
-      cache:  true,
-      silent: false
-    }
+    { cache:  true, silent: false }
   end
 
   # Private: Determines to use or instance a Redis connection
@@ -149,8 +146,6 @@ class Minuteman
   # Private: The prefix key of all the operations
   #
   def operations_cache_key_prefix
-    [
-      PREFIX, Minuteman::KeysMethods::BIT_OPERATION_PREFIX
-    ].join("_")
+    [ PREFIX, Minuteman::KeysMethods::BIT_OPERATION_PREFIX ].join("_")
   end
 end

@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency("redis", "~> 3.0.3")
 
-  s.add_development_dependency("minitest",        "~> 4.2.0")
+  s.add_development_dependency("minitest",        "~> 4.3.0")
+  s.add_development_dependency("minitest-given",  "~> 3.0.0")
   s.add_development_dependency("redis-namespace", "~> 1.2.1")
 end

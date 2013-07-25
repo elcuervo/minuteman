@@ -1,237 +1,225 @@
 require_relative "../test_helper"
 
 describe Minuteman do
-  before do
-    @analytics = Minuteman.new
+  Given(:analytics)   { Minuteman.new }
 
-    today = Time.now.utc
-    last_month  = today - (3600 * 24 * 30)
-    last_week   = today - (3600 * 24 * 7)
-    last_minute = today - 120
+  after { analytics.reset_all }
 
-    @analytics.track("login", 12)
-    @analytics.track("login", [2, 42])
-    @analytics.track("login", 2, last_week)
-    @analytics.track("login:successful", 567, last_month)
+  context "configuration" do
+    Then { analytics.redis }
+    Then { analytics.options[:cache] == true }
 
-    @year_events   = @analytics.year("login", today)
-    @week_events   = @analytics.week("login", today)
-    @month_events  = @analytics.month("login", today)
-    @day_events    = @analytics.day("login", today)
-    @hour_events   = @analytics.hour("login", today)
-    @minute_events = @analytics.minute("login", today)
+    context "switching options" do
+      Given(:minuteman) { Minuteman.new }
 
-    @last_week_events = @analytics.week("login", last_week)
-    @last_minute_events = @analytics.minute("login", last_minute)
-    @last_month_events = @analytics.month("login:successful", last_month)
+      When { minuteman.options[:cache] = false }
+      Then { minuteman.options[:cache] == false }
+    end
+
+    context "changing time spans" do
+      Given(:time_spans) { %w[year month day hour] }
+      Given(:minuteman) { Minuteman.new(time_spans: time_spans) }
+
+      When { minuteman.track("login", 12) }
+
+      Then { minuteman.respond_to?(:year) }
+      Then { minuteman.respond_to?(:month) }
+      Then { minuteman.respond_to?(:day) }
+      Then { minuteman.respond_to?(:hour) }
+
+      Then { !minuteman.respond_to?(:minute) }
+      Then { !minuteman.respond_to?(:week) }
+
+      Then { minuteman.redis.keys.size == 4 }
+      Then { minuteman.options[:time_spans] == time_spans }
+    end
+
+    context "fail silently" do
+      Given(:minuteman) { Minuteman.new(silent: true, redis: { port: 1234 }) }
+      When(:result) { minuteman.track("test", 1) }
+      Then { result == nil }
+    end
+
+    context "fail loudly" do
+      Given(:minuteman) { Minuteman.new(redis: { port: 1234 }) }
+      When(:result) { minuteman.track("test", 1) }
+      Then { result == Failure(Redis::CannotConnectError) }
+    end
+
+    context "changing Redis connection" do
+      Given(:redis) { Redis.new }
+      Then { Minuteman.redis != redis }
+
+      context "return the correct connection" do
+        When(:minuteman) { Minuteman.new(redis: redis) }
+
+        Then { minuteman.redis == redis }
+      end
+
+      context "switching the connection" do
+        Given(:minuteman) { Minuteman.new }
+        When { minuteman.redis = redis }
+        Then { redis == Minuteman.redis }
+      end
+
+      context "using Redis::Namespace" do
+        Given(:namespace) { Redis::Namespace.new(:ns, redis: Redis.new) }
+        Given(:minuteman) { Minuteman.new(redis: namespace) }
+
+        Then { minuteman.redis == namespace }
+      end
+    end
   end
 
-  after { @analytics.reset_all }
+  context "event tracking" do
+    Given(:today)       { Time.now.utc }
+    Given(:last_month)  { today - (3600 * 24 * 30) }
+    Given(:last_week)   { today - (3600 * 24 * 7) }
+    Given(:last_minute) { today - 120 }
 
-  it "should initialize correctly" do
-    assert @analytics.redis
-  end
+    Given(:year_events) { analytics.year("login", today) }
+    Given(:week_events) { analytics.week("login", today) }
+    Given(:month_events) { analytics.month("login", today) }
+    Given(:day_events) { analytics.day("login", today) }
+    Given(:hour_events) { analytics.hour("login", today) }
+    Given(:minute_events) { analytics.minute("login", today) }
+    Given(:last_week_events) { analytics.week("login", last_week) }
+    Given(:last_minute_events) { analytics.minute("login", last_minute) }
+    Given(:last_month_events) { analytics.month("login:successful", last_month) }
 
-  it "should track an event on a time" do
-    assert_equal 3, @year_events.length
-    assert_equal 3, @week_events.length
-    assert_equal 1, @last_week_events.length
-    assert_equal 1, @last_month_events.length
-    assert_equal [true, true, false], @week_events.include?(12, 2, 1)
+    before do
+      analytics.track("login", 12)
+      analytics.track("login", [2, 42])
+      analytics.track("login", 2, last_week)
+      analytics.track("login:successful", 567, last_month)
+    end
 
-    assert @year_events.include?(12)
-    assert @month_events.include?(12)
-    assert @day_events.include?(12)
-    assert @hour_events.include?(12)
-    assert @minute_events.include?(12)
+    Then { analytics.events.size == 2 }
+    Then { year_events.length == 3 }
+    Then { week_events.length == 3 }
+    Then { last_week_events.length == 1 }
+    Then { last_month_events.length == 1 }
 
-    assert @last_week_events.include?(2)
-    assert !@month_events.include?(5)
-    assert !@last_minute_events.include?(12)
-    assert @last_month_events.include?(567)
-  end
+    context "reseting" do
+      before { analytics.reset_all }
+      Then { analytics.events.size == 0 }
 
-  it "should list all the events" do
-    assert_equal 2, @analytics.events.size
-    assert_equal ["login", "login:successful"], @analytics.events.sort
-  end
+      context "bit operations" do
+        before { week_events & last_week_events }
 
-  it "should reset all the keys" do
-    assert_equal 2, @analytics.events.size
+        When { analytics.reset_operations_cache }
+        Then { analytics.operations.size == 0 }
+      end
+    end
 
-    @analytics.reset_all
+    context "on a given time" do
+      Then { year_events.length == 3 }
+      Then { week_events.length == 3 }
 
-    assert_equal 0, @analytics.events.size
-  end
+      Then { week_events.include?(12, 2, 1) == [true, true, false] }
+      Then { year_events.include?(12) }
+      Then { month_events.include?(12) }
+      Then { day_events.include?(12) }
+      Then { hour_events.include?(12) }
+      Then { minute_events.include?(12) }
 
-  it "should reset all bit operation keys" do
-    @week_events & @last_week_events
-    assert_equal 1, @analytics.operations.size
+      Then { last_week_events.include?(2) }
+      Then { !month_events.include?(5) }
+      Then { !last_minute_events.include?(12) }
+      Then { last_month_events.include?(567) }
+    end
 
-    @analytics.reset_operations_cache
+    context "listing events" do
+      Then { analytics.events.size == 2 }
+      Then { analytics.events.sort == ["login", "login:successful"] }
+    end
 
-    assert_equal 0, @analytics.operations.size
-  end
+    context "composing" do
+      context "using AND" do
+        Given(:and_operation) { week_events & last_week_events }
 
-  it "should accept the AND bitwise operations" do
-    and_operation = @week_events & @last_week_events
+        Then { week_events.include?(2) }
+        Then { week_events.include?(12) }
 
-    assert @week_events.include?(2)
-    assert @week_events.include?(12)
+        Then { last_week_events.include?(2) }
+        Then { !last_week_events.include?(12) }
 
-    assert @last_week_events.include?(2)
-    assert !@last_week_events.include?(12)
+        Then { !and_operation.include?(12) }
+        Then { and_operation.include?(2) }
+        Then { and_operation.length == 1 }
+      end
 
-    assert_equal 1, and_operation.length
+      context "using OR" do
+        Given(:or_operation) { week_events | last_week_events }
 
-    assert !and_operation.include?(12)
-    assert and_operation.include?(2)
-  end
+        Then { week_events.include?(2) }
+        Then { last_week_events.include?(2) }
+        Then { !last_week_events.include?(12) }
 
-  it "should accept the OR bitwise operations" do
-    or_operation = @week_events | @last_week_events
+        Then { or_operation.include?(12) }
+        Then { or_operation.include?(2) }
+        Then { or_operation.length == 3 }
+      end
 
-    assert @week_events.include?(2)
-    assert @last_week_events.include?(2)
-    assert !@last_week_events.include?(12)
+      context "using NOT" do
+        Given(:not_operation) { ~week_events }
 
-    assert_equal 3, or_operation.length
+        Then { week_events.include?(2) }
+        Then { week_events.include?(12) }
 
-    assert or_operation.include?(12)
-    assert or_operation.include?(2)
-  end
+        Then { !not_operation.include?(12) }
+        Then { !not_operation.include?(2) }
+      end
 
-  it "should accept the NOT bitwise operations" do
-    not_operation = ~@week_events
+      context "using OR alias (+)" do
+        Given(:or_operation) { week_events + last_week_events }
 
-    assert @week_events.include?(2)
-    assert @week_events.include?(12)
+        Then { week_events.include?(2) }
+        Then { last_week_events.include?(2) }
+        Then { !last_week_events.include?(12) }
 
-    assert !not_operation.include?(12)
-    assert !not_operation.include?(2)
-  end
+        Then { or_operation.include?(12) }
+        Then { or_operation.include?(2) }
+        Then { or_operation.length == 3 }
+      end
 
-  it "should have an alias for the OR operator" do
-    or_operation = @week_events + @last_week_events
+      context "using MINUS" do
+        Given(:substract_operation) { year_events - week_events }
 
-    assert @week_events.include?(2)
-    assert @last_week_events.include?(2)
-    assert !@last_week_events.include?(12)
+        Then { week_events.include?(2) }
+        Then { year_events.include?(2) }
+        Then { !substract_operation.include?(2) }
+      end
+    end
 
-    assert_equal 3, or_operation.length
+    context "composing multiple operations" do
+      Given(:multi_operation) { week_events & last_week_events | year_events }
+      Then { multi_operation.is_a?(Minuteman::BitOperations::Result) }
+    end
 
-    assert or_operation.include?(12)
-    assert or_operation.include?(2)
-  end
+    context "composing against arrays" do
+      context "using AND returns the intersection" do
+        Given(:ids) { week_events & [2, 12, 43] }
 
-  it "should accept the substraction of a set" do
-    substract_operation = @year_events - @week_events
+        Then { ids.is_a?(Minuteman::BitOperations::Data) }
+        Then { ids == [2, 12] }
+      end
 
-    assert @week_events.include?(2)
-    assert @year_events.include?(2)
-    assert !substract_operation.include?(2)
-  end
+      context "using MINUS returns the difference" do
+        Given(:ids) { week_events - [2, 12, 43] }
 
-  it "should accept multiple consecutive operations" do
-    multi_operation = @week_events & @last_week_events | @year_events
+        Then { ids.is_a?(Minuteman::BitOperations::Data) }
+        Then { ids == [43] }
+      end
 
-    assert_kind_of Minuteman::BitOperations::Result, multi_operation
-  end
+      context "returns an object that behaves like Array" do
+        Given(:ids) { week_events & [2, 12, 43] }
 
-  it "should return the ids that belong to a given set" do
-    ids = @week_events & [2, 12, 43]
+        Then { ids.each.is_a?(Enumerator) }
+        Then { ids.map.is_a?(Enumerator) }
+        Then { ids.size == 2 }
+      end
 
-    assert_kind_of Minuteman::BitOperations::Data, ids
-    assert_equal [2, 12], ids
-  end
-
-  it "should return the ids that do not belong to the given set" do
-    ids = @week_events - [2, 12, 43]
-
-    assert_kind_of Minuteman::BitOperations::Data, ids
-    assert_equal [43], ids
-  end
-
-  it "should return a set with data that behaves like an array" do
-    ids = @week_events & [2, 12, 43]
-
-    assert_kind_of Enumerator, ids.each
-    assert_kind_of Enumerator, ids.map
-    assert_equal 2, ids.size
-  end
-end
-
-describe "Using options" do
-  it "should be able to stop using the cache" do
-    minuteman = Minuteman.new
-    assert_equal true, minuteman.options[:cache]
-
-    minuteman.options[:cache] = false
-
-    assert_equal false, minuteman.options[:cache]
-  end
-end
-
-describe "Changing the Minuteman time spans" do
-  it "should be able to change the span and ignore minute" do
-    time_spans = %w[year month day hour]
-    minuteman = Minuteman.new(time_spans: time_spans)
-
-    minuteman.track("login", 12)
-
-    assert_equal 4, minuteman.redis.keys.size
-    assert_equal time_spans, minuteman.options[:time_spans]
-
-    assert minuteman.respond_to?(:year)
-    assert minuteman.respond_to?(:month)
-    assert minuteman.respond_to?(:day)
-    assert minuteman.respond_to?(:hour)
-
-    assert !minuteman.respond_to?(:minute)
-    assert !minuteman.respond_to?(:week)
-  end
-end
-
-describe "Changing Minuteman redis connections" do
-  it "should support using a Redis instance" do
-    redis = Redis.new
-    minuteman = Minuteman.new(redis: redis)
-
-    assert_equal redis, Minuteman.redis
-    assert_equal redis, minuteman.redis
-  end
-
-  it "should support changing the current connection" do
-    redis = Redis.new
-    minuteman = Minuteman.new
-
-    assert redis != Minuteman.redis
-
-    minuteman.redis = redis
-
-    assert_equal redis, minuteman.redis
-  end
-
-  it "should support Redis::Namespace" do
-    namespace = Redis::Namespace.new(:ns, redis: Redis.new)
-
-    minuteman = Minuteman.new(redis: namespace)
-
-    assert_equal namespace, Minuteman.redis
-    assert_equal namespace, minuteman.redis
-  end
-
-  it "should fail silently" do
-    minuteman = Minuteman.new(silent: true, redis: { port: 1234 })
-
-    minuteman.track("test", 1)
-  end
-
-  it "should fail loudly" do
-    minuteman = Minuteman.new(redis: { port: 1234 })
-
-    assert_raises Redis::CannotConnectError do
-      minuteman.track("test", 1)
     end
   end
 end

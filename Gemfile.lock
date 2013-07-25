@@ -7,17 +7,24 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    minitest (4.2.0)
+    given_core (3.0.0)
+      sorcerer (>= 0.3.7)
+    minitest (4.3.2)
+    minitest-given (3.0.0)
+      given_core (= 3.0.0)
+      minitest (> 4.3)
     rake (0.9.2.2)
     redis (3.0.3)
     redis-namespace (1.2.1)
       redis (~> 3.0.0)
+    sorcerer (1.0.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  minitest (~> 4.2.0)
+  minitest (~> 4.3.0)
+  minitest-given (~> 3.0.0)
   minuteman!
   rake
   redis-namespace (~> 1.2.1)
