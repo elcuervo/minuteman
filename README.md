@@ -1,7 +1,7 @@
 ![Minuteman](http://elcuervo.github.com/minuteman/img/minuteman-readme.png)
 
 # Minuteman
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/elcuervo/minuteman)
+[![Code Climate](https://codeclimate.com/github/elcuervo/minuteman.png)](https://codeclimate.com/github/elcuervo/minuteman)
 [![Build Status](https://secure.travis-ci.org/elcuervo/minuteman.png?branch=master)](https://travis-ci.org/elcuervo/minuteman)
 
 _Wikipedia_: Minutemen were members of teams from Massachusetts that were well-prepared
