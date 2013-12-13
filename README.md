@@ -171,3 +171,7 @@ successful_buys = analytics.month("buy:complete")
 
 conversion_rate = (invited | from_adsense) & successful_buys
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/elcuervo/minuteman/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
