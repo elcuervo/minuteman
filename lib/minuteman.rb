@@ -22,7 +22,7 @@ class Minuteman
 
   PREFIX = "minuteman"
 
-  def_delegators self, :redis=, :options, :options=, :safe
+  def_delegators self, :redis, :redis=, :options, :options=, :safe
 
   # Public: Initializes Minuteman
   #

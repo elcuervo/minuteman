@@ -7,3 +7,5 @@ require "minitest/given"
 require "minitest/autorun"
 require "minuteman"
 require "redis-namespace"
+
+Minuteman.redis = Redis.new
