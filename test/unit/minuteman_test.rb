@@ -34,6 +34,11 @@ describe Minuteman do
       Then { minuteman.options[:time_spans] == time_spans }
     end
 
+    context "with no redis specified" do
+      Given(:minuteman) { Minuteman.new }
+      Then { minuteman.redis != nil }
+    end
+
     context "fail silently" do
       Given(:minuteman) { Minuteman.new(silent: true, redis: { port: 1234 }) }
       When(:result) { minuteman.track("test", 1) }

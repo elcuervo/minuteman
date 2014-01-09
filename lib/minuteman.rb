@@ -29,14 +29,26 @@ class Minuteman
   #   options - An options hash to change how Minuteman behaves
   #
   def initialize(options = {})
-    redis_options = options.delete(:redis) || {}
 
     self.options = default_options.merge!(options)
-    self.redis = define_connection(redis_options)
 
     spans = self.options.fetch(:time_spans, %w[year month week day hour minute])
     @time_spans = generate_spans(spans)
   end
+ 
+  # Public: Lazily Instantiate and memoize the Redis connection 
+  #
+  def redis
+    @redis ||= case options[:redis]
+               when nil
+                 Redis.new
+               when Hash
+                 Redis.new options[:redis]
+               else
+                 options[:redis]
+               end
+  end
+
 
   # Public: Marks an id to a given event on a given time
   #
@@ -85,7 +97,7 @@ class Minuteman
 
   private
 
-  # Public: Generates the methods to fech data
+  # Private: Generates the methods to fech data
   #
   #   spans: An array of timespans corresponding to a TimeSpan class
   #
@@ -108,20 +120,6 @@ class Minuteman
   #
   def default_options
     { cache:  true, silent: false }
-  end
-
-  # Private: Determines to use or instance a Redis connection
-  #
-  #  object: Can be the options to instance a Redis connection or a connection
-  #          itself
-  #
-  def define_connection(object)
-    case object
-    when Redis, defined?(Redis::Namespace) && Redis::Namespace
-      object
-    else
-      Redis.new(object)
-    end
   end
 
   # Private: Marks ids for a given time events
