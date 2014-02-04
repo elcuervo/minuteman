@@ -35,8 +35,8 @@ class Minuteman
     spans = self.options.fetch(:time_spans, %w[year month week day hour minute])
     @time_spans = generate_spans(spans)
   end
- 
-  # Public: Lazily Instantiate and memoize the Redis connection 
+
+  # Public: Lazily Instantiate and memoize the Redis connection
   #
   def redis
     @redis ||= case options[:redis]
