@@ -111,7 +111,7 @@ today_events.include?(admin.id)
 #=> false
 
 # Bulk check
-today_events.include?(User.all.pluck(:id))
+today_events.include?(*User.all.pluck(:id))
 #=> [true, true, false, false]
 ```
 
