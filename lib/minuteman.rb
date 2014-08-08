@@ -1,4 +1,5 @@
 require 'redic'
+require 'minuteman/user'
 
 module Minuteman
   class << self
