@@ -52,3 +52,9 @@ test "tracks an anonymous user and the promotes it to a real one" do
   assert user.identifier == 42
   assert Minuteman::User[42].uid == user.uid
 end
+
+test "use the method shortcut" do
+  Minuteman.track("enter:website")
+
+  assert Minuteman("enter:website").day.count == 1
+end
