@@ -42,3 +42,13 @@ test "track an user" do
   analyzer = Minuteman.analyze("login:successful")
   assert analyzer.day(Time.now.utc).count == 1
 end
+
+test "tracks an anonymous user and the promotes it to a real one" do
+  user = Minuteman.track("enter:website")
+  assert user.identifier == nil
+
+  user.promote(42)
+
+  assert user.identifier == 42
+  assert Minuteman::User[42].uid == user.uid
+end

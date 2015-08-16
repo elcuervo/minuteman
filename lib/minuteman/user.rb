@@ -16,6 +16,11 @@ module Minuteman
       super
     end
 
+    def promote(identifier)
+      self.identifier = identifier
+      save
+    end
+
     def self.[](identifier_or_uuid)
       with(:uid, identifier_or_uuid) || with(:identifier, identifier_or_uuid)
     end
