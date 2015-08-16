@@ -8,16 +8,16 @@ module Minuteman
     attribute :uid
     attribute :identifier
 
-    index :uid
-    index :identifier
+    unique :uid
+    unique :identifier
 
     def save
       self.uid ||= SecureRandom.uuid
       super
     end
 
-    def self.[](id_uid)
-      super(id_uid) || find(uid: id_uid).first
+    def self.[](identifier_or_uuid)
+      with(:uid, identifier_or_uuid) || with(:identifier, identifier_or_uuid)
     end
   end
 end

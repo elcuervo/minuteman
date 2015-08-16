@@ -10,7 +10,7 @@ test "a connection" do
 end
 
 test "models in minuteman namespace" do
-  assert_equal Minuteman::User.create.key, "minuteman:Minuteman::User:1"
+  assert_equal Minuteman::User.create.key, "Minuteman::User:1"
 end
 
 test "an anonymous user" do
@@ -22,13 +22,23 @@ test "an anonymous user" do
   assert user.id
 end
 
-test "access a user" do
-  user = Minuteman::User.create(id: 5)
+test "access a user with and id or an uuid" do
+  user = Minuteman::User.create(identifier: 5)
 
   assert Minuteman::User[user.uid].is_a?(Minuteman::User)
-  assert Minuteman::User[user.id].is_a?(Minuteman::User)
+  assert Minuteman::User[user.identifier].is_a?(Minuteman::User)
+end
+
+test "track an anonymous user" do
+  user = Minuteman.track("unknown")
+  assert user.uid
 end
 
 test "track an user" do
-  assert Minuteman.track("login:successful", Minuteman::User.create)
+  user = Minuteman::User.create
+
+  assert Minuteman.track("login:successful", user)
+
+  analyzer = Minuteman.analyze("login:successful")
+  assert analyzer.day(Time.now.utc).count == 1
 end
