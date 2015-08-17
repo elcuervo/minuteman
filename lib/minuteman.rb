@@ -4,7 +4,7 @@ require 'minuteman/analyzer'
 
 module Minuteman
   LUA_CACHE      = Hash.new { |h, k| h[k] = Hash.new }
-  LUA_OPERATIOSN = File.expand_path("../lua/operations.lua",   __FILE__)
+  LUA_OPERATIONS = File.expand_path("../minuteman/lua/operations.lua",   __FILE__)
 
   class << self
     def redis
@@ -15,6 +15,16 @@ module Minuteman
       @_redis = redis
 
       Ohm.redis = @_redis
+    end
+
+    def prefix
+      @_prefix ||= "mm"
+    end
+
+    def patterns
+      @_patterns ||= {
+        day: "%Y-%m-%d"
+      }
     end
 
     def track(action, users = nil, time = Time.now.utc)
@@ -32,35 +42,6 @@ module Minuteman
     end
 
     private
-
-    # Stolen
-    def script(file, *args)
-      begin
-        cache = LUA_CACHE[redis.url]
-
-        if cache.key?(file)
-          sha = cache[file]
-        else
-          src = File.read(file)
-          sha = redis.call("SCRIPT", "LOAD", src)
-
-          cache[file] = sha
-        end
-
-        redis.call!("EVALSHA", sha, *args)
-
-      rescue RuntimeError
-        case $!.message
-        when ErrorPatterns::NOSCRIPT
-          LUA_CACHE[redis.url].clear
-          retry
-        when ErrorPatterns::DUPLICATE
-          raise UniqueIndexViolation, $1
-        else
-          raise $!
-        end
-      end
-    end
 
     def analyzers_cache
       @_analyzers_cache ||= Hash.new { |h,k| h[k] = Minuteman::Analyzer.new(k) }

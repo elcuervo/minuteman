@@ -58,3 +58,14 @@ test "use the method shortcut" do
 
   assert Minuteman("enter:website").day.count == 1
 end
+
+test "count the user events in a given day" do
+  events = %w(test:one test:two)
+  user = Minuteman::User.create
+
+  Minuteman.track(events[0], user)
+  Minuteman.track(events[1], user)
+
+  intersect = Minuteman(events[0]).day + Minuteman(events[1]).day
+  assert intersect.count == 2
+end
