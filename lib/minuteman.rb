@@ -23,7 +23,11 @@ module Minuteman
 
     def patterns
       @_patterns ||= {
-        day: "%Y-%m-%d"
+        year:   "%Y",
+        month:  "%Y-%m",
+        day:    -> (time) { time.strftime("%Y-%m-%d") },
+        hour:   "%Y-%m-%d %H",
+        minute: "%Y-%m-%d %H:%m",
       }
     end
 
