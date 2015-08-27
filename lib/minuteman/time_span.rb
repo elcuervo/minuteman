@@ -5,16 +5,9 @@ module Minuteman
   TimeSpan = Struct.new(:action, :key) do
     include Minuteman::Analyzable
 
-    class << self
-      Minuteman.patterns.each do |k, v|
-        define_method(k) do
-          new(action, Minuteman.patterns[k].call(time))
-        end
-      end
-    end
-
     def count
-      1
+      event = Minuteman::Event.new(action, key)
+      Minuteman.redis.call("BITCOUNT", event)
     end
   end
 end

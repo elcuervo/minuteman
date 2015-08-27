@@ -1,6 +1,4 @@
 require 'redic'
-require 'minuteman/user'
-require 'minuteman/analyzer'
 
 module Minuteman
   LUA_CACHE      = Hash.new { |h, k| h[k] = Hash.new }
@@ -23,19 +21,26 @@ module Minuteman
 
     def patterns
       @_patterns ||= {
-        year:   "%Y",
-        month:  "%Y-%m",
+        year:   -> (time) { time.strftime("%Y") },
+        month:  -> (time) { time.strftime("%Y-%m") },
         day:    -> (time) { time.strftime("%Y-%m-%d") },
-        hour:   "%Y-%m-%d %H",
-        minute: "%Y-%m-%d %H:%m",
+        hour:   -> (time) { time.strftime("%Y-%m-%d %H") },
+        minute: -> (time) { time.strftime("%Y-%m-%d %H:%m") },
       }
+    end
+
+    def time_spans
+      @_time_spans ||= patterns.keys
     end
 
     def track(action, users = nil, time = Time.now.utc)
       users = Minuteman::User.create if users.nil?
 
       Array(users).each do |user|
-        Minuteman.redis.call("SETBIT", action, user.id, 1)
+        time_spans.each do |time_span|
+          key = Minuteman::Event.new(action, patterns[time_span].call(time))
+          Minuteman.redis.call("SETBIT", key, user.id, 1)
+        end
       end
 
       users
@@ -56,3 +61,7 @@ end
 def Minuteman(action)
   Minuteman.analyze(action)
 end
+
+require 'minuteman/user'
+require 'minuteman/event'
+require 'minuteman/analyzer'
