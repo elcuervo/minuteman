@@ -8,7 +8,7 @@ module Minuteman
     end
 
     def |(event)
-      operation("AND", [key, event.key])
+      operation("AND", [self, event])
     end
     alias_method :+, :|
 
@@ -18,11 +18,14 @@ module Minuteman
 
     private
 
-    def operation(action, keys = [])
+    def operation(action, events = [])
+      destination_key = "#{Minuteman.prefix}Operation:#{events[0].id}:#{action}:#{events[1].id}"
+
       result_key = script(Minuteman::LUA_OPERATIONS,
-                          0, Minuteman.prefix.to_msgpack,
-                          action.upcase.to_msgpack,
-                          keys.to_msgpack)
+                          0, action.upcase.to_msgpack,
+                          events.map(&:key).to_msgpack,
+                          destination_key.to_msgpack
+                         )
 
       Minuteman::Result.new(result_key)
     end
@@ -51,8 +54,6 @@ module Minuteman
         when ErrorPatterns::DUPLICATE
           raise UniqueIndexViolation, $1
         else
-          require 'byebug'
-          byebug
           raise $!
         end
       end

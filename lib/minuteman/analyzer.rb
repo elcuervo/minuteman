@@ -4,7 +4,7 @@ module Minuteman
   Analyzer = Struct.new(:action) do
     def day(time = Time.now.utc)
       key = Minuteman.patterns[:day].call(time)
-      Minuteman::Event.wrap(action, key)
+      Minuteman::Event.find_or_create(type: action, time: key)
     end
   end
 end

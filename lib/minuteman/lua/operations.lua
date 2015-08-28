@@ -1,32 +1,24 @@
 ---
 redis.log(redis.LOG_NOTICE, 'Minuteman')
 
-local prefix = cmsgpack.unpack(ARGV[1])
-local action = cmsgpack.unpack(ARGV[2])
-local keys = cmsgpack.unpack(ARGV[3])
+local action = cmsgpack.unpack(ARGV[1])
+local keys = cmsgpack.unpack(ARGV[2])
+local dest = cmsgpack.unpack(ARGV[3])
 
-local function operate(prefix, action, keys)
+local function operate(action, keys)
   if type(keys) == "string" then keys = { keys } end
 
-  local keys_names = table.concat(keys, "_")
-  local dest_key = prefix .. ":" .. action .. ":" .. keys_names
+  redis.call("BITOP", action, dest, unpack(keys) )
 
-  redis.log(redis.LOG_DEBUG, action)
-  redis.log(redis.LOG_DEBUG, dest_key)
-  redis.log(redis.LOG_DEBUG, keys)
-  redis.log(redis.LOG_DEBUG, unpack(keys))
-
-  redis.call("BITOP", action, dest_key, unpack(keys) )
-
-  return dest_key
+  return dest
 end
 
-local function AND(prefix, keys) return operate(prefix, "AND", keys) end
-local function OR(prefix, keys)  return operate(prefix, "OR", keys)  end
-local function XOR(prefix, keys) return operate(prefix, "XOR", keys) end
-local function NOT(prefix, keys) return operate(prefix, "NOT", keys) end
+local function AND(keys) return operate("AND", keys) end
+local function OR(keys)  return operate("OR",  keys) end
+local function XOR(keys) return operate("XOR", keys) end
+local function NOT(keys) return operate("NOT", keys) end
 
-local function MINUS(prefix, keys)
+local function MINUS(keys)
   local items = keys
   local dest = table.remove(items, 1)
 
@@ -40,12 +32,12 @@ local function MINUS(prefix, keys)
   return dest
 end
 
-local function operation(prefix, action, keys)
+local function operation(action, keys)
   if action == "MINUS" then
-    return MINUS(prefix, keys)
+    return MINUS(keys)
   else
-    return operate(prefix, action, keys)
+    return operate(action, keys)
   end
 end
 
-return operation(prefix, action, keys)
+return operation(action, keys)

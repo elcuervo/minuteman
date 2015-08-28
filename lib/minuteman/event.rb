@@ -8,8 +8,20 @@ module Minuteman
     attribute :type
     attribute :time
 
-    def self.wrap(type, time)
-      new(type: type, time: time)
+    def self.find(*args)
+      looked_up = "#{self.class}::#{args.first[:type]}:#{args.first[:time]}:id"
+      potential_id = Minuteman.redis.call("GET", looked_up)
+      self[potential_id]
+    end
+
+    def self.find_or_create(*args)
+      find(*args) || create(*args)
+    end
+
+    def self.create(*args)
+      event = super(*args)
+      Minuteman.redis.call("SET", "#{event.key}:id", event.id)
+      event
     end
 
     def key
