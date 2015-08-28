@@ -1,7 +1,7 @@
 language: ruby
+install: bash <(curl -s https://raw.githubusercontent.com/elcuervo/rpm/master/bin/rpm-install)
 rvm:
-  - "1.9.3"
   - "2.0.0"
-  - "jruby-19mode"
+  - "2.2.2"
 services:
   - "redis-server"
