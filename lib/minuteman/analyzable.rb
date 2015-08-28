@@ -7,8 +7,12 @@ module Minuteman
       NOSCRIPT = /^NOSCRIPT/.freeze
     end
 
-    def |(event)
+    def &(event)
       operation("AND", [self, event])
+    end
+
+    def |(event)
+      operation("OR", [self, event])
     end
     alias_method :+, :|
 

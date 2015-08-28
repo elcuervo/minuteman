@@ -59,7 +59,7 @@ test "use the method shortcut" do
   assert Minuteman("enter:website").day.count == 5
 end
 
-test "count the user events in a given day" do
+test "operation AND" do
   users = Array.new(3) { Minuteman::User.create }
   users.each do |user|
     Minuteman.track("landing_page:new", users)
@@ -68,6 +68,19 @@ test "count the user events in a given day" do
   Minuteman.track("buy:banana", users[0])
   Minuteman.track("buy:banana", users[2])
 
-  intersect = Minuteman("landing_page:new").day + Minuteman("buy:banana").day
-  assert intersect.count == 2
+  and_op = Minuteman("landing_page:new").day & Minuteman("buy:banana").day
+  assert and_op.count == 2
+end
+
+test "operation OR" do
+  users = Array.new(3) { Minuteman::User.create }
+  users.each do |user|
+    Minuteman.track("landing_page:new", users)
+  end
+
+  Minuteman.track("buy:banana", users[0])
+  Minuteman.track("buy:banana", users[2])
+
+  or_op = Minuteman("landing_page:new").day | Minuteman("buy:banana").day
+  assert or_op.count == 3
 end
