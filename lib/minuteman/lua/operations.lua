@@ -1,4 +1,6 @@
 ---
+redis.log(redis.LOG_NOTICE, 'Minuteman')
+
 local prefix = cmsgpack.unpack(ARGV[1])
 local action = cmsgpack.unpack(ARGV[2])
 local keys = cmsgpack.unpack(ARGV[3])
@@ -8,6 +10,11 @@ local function operate(prefix, action, keys)
 
   local keys_names = table.concat(keys, "_")
   local dest_key = prefix .. ":" .. action .. ":" .. keys_names
+
+  redis.log(redis.LOG_DEBUG, action)
+  redis.log(redis.LOG_DEBUG, dest_key)
+  redis.log(redis.LOG_DEBUG, keys)
+  redis.log(redis.LOG_DEBUG, unpack(keys))
 
   redis.call("BITOP", action, dest_key, unpack(keys) )
 

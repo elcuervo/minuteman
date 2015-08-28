@@ -6,8 +6,7 @@ module Minuteman
     include Minuteman::Analyzable
 
     def count
-      event = Minuteman::Event.new(action, key)
-      Minuteman.redis.call("BITCOUNT", event)
+      Minuteman.redis.call("BITCOUNT", id)
     end
   end
 end

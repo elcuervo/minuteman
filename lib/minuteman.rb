@@ -16,7 +16,7 @@ module Minuteman
     end
 
     def prefix
-      @_prefix ||= "mm"
+      @_prefix ||= "Minuteman::"
     end
 
     def patterns

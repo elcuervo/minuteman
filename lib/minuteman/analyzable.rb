@@ -8,7 +8,7 @@ module Minuteman
     end
 
     def |(time_span)
-      operation("AND", [ key, time_span.key ] )
+      operation("AND", [id, time_span.id])
     end
     alias_method :+, :|
 
@@ -16,9 +16,10 @@ module Minuteman
 
     def operation(action, keys = [])
       script(Minuteman::LUA_OPERATIONS,
-             Minuteman.prefix,
-             action.upcase,
+             0, Minuteman.prefix.to_msgpack,
+             action.upcase.to_msgpack,
              keys.to_msgpack)
+      Minuteman::TimeSpan
     end
 
     # Stolen
@@ -45,6 +46,8 @@ module Minuteman
         when ErrorPatterns::DUPLICATE
           raise UniqueIndexViolation, $1
         else
+          require 'byebug'
+          byebug
           raise $!
         end
       end

@@ -54,9 +54,7 @@ test "tracks an anonymous user and the promotes it to a real one" do
 end
 
 test "use the method shortcut" do
-  5.times {
-    Minuteman.track("enter:website")
-  }
+  5.times { Minuteman.track("enter:website") }
 
   assert Minuteman("enter:website").day.count == 5
 end
@@ -68,6 +66,6 @@ test "count the user events in a given day" do
   Minuteman.track(events[0], user)
   Minuteman.track(events[1], user)
 
-#  intersect = Minuteman(events[0]).day + Minuteman(events[1]).day
-#  assert intersect.count == 2
+  intersect = Minuteman(events[0]).day + Minuteman(events[1]).day
+  assert intersect.count == 2
 end
