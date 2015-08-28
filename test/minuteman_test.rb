@@ -65,10 +65,10 @@ test "operation AND" do
     Minuteman.track("landing_page:new", users)
   end
 
-  Minuteman.track("buy:banana", users[0])
-  Minuteman.track("buy:banana", users[2])
+  Minuteman.track("buy:product", users[0])
+  Minuteman.track("buy:product", users[2])
 
-  and_op = Minuteman("landing_page:new").day & Minuteman("buy:banana").day
+  and_op = Minuteman("landing_page:new").day & Minuteman("buy:product").day
   assert and_op.count == 2
 end
 
@@ -78,9 +78,9 @@ test "operation OR" do
     Minuteman.track("landing_page:new", users)
   end
 
-  Minuteman.track("buy:banana", users[0])
-  Minuteman.track("buy:banana", users[2])
+  Minuteman.track("buy:product", users[0])
+  Minuteman.track("buy:product", users[2])
 
-  or_op = Minuteman("landing_page:new").day | Minuteman("buy:banana").day
+  or_op = Minuteman("landing_page:new").day | Minuteman("buy:product").day
   assert or_op.count == 3
 end
