@@ -1,4 +1,4 @@
-require "msgpack"
+require 'msgpack'
 
 module Minuteman
   module Analyzable
@@ -7,19 +7,24 @@ module Minuteman
       NOSCRIPT = /^NOSCRIPT/.freeze
     end
 
-    def |(time_span)
-      operation("AND", [id, time_span.id])
+    def |(event)
+      operation("AND", [key, event.key])
     end
     alias_method :+, :|
+
+    def count
+      Minuteman.redis.call("BITCOUNT", key)
+    end
 
     private
 
     def operation(action, keys = [])
-      script(Minuteman::LUA_OPERATIONS,
-             0, Minuteman.prefix.to_msgpack,
-             action.upcase.to_msgpack,
-             keys.to_msgpack)
-      Minuteman::TimeSpan
+      result_key = script(Minuteman::LUA_OPERATIONS,
+                          0, Minuteman.prefix.to_msgpack,
+                          action.upcase.to_msgpack,
+                          keys.to_msgpack)
+
+      Minuteman::Result.new(result_key)
     end
 
     # Stolen

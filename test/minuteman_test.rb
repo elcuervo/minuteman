@@ -60,12 +60,14 @@ test "use the method shortcut" do
 end
 
 test "count the user events in a given day" do
-  events = %w(test:one test:two)
-  user = Minuteman::User.create
+  users = Array.new(3) { Minuteman::User.create }
+  users.each do |user|
+    Minuteman.track("landing_page:new", users)
+  end
 
-  Minuteman.track(events[0], user)
-  Minuteman.track(events[1], user)
+  Minuteman.track("buy:banana", users[0])
+  Minuteman.track("buy:banana", users[2])
 
-  intersect = Minuteman(events[0]).day + Minuteman(events[1]).day
+  intersect = Minuteman("landing_page:new").day + Minuteman("buy:banana").day
   assert intersect.count == 2
 end

@@ -1,7 +1,23 @@
+require 'minuteman/model'
+require 'minuteman/analyzable'
+
 module Minuteman
-  Event = Struct.new(:action, :key) do
-    def id
-      @_id ||= "#{self.class}:#{action}_#{key}"
+  class Event < Minuteman::Model
+    include Minuteman::Analyzable
+
+    attribute :type
+    attribute :time
+
+    def self.wrap(type, time)
+      new(type: type, time: time)
+    end
+
+    def key
+      "#{self.class}::#{type}:#{time}"
+    end
+
+    def setbit(int)
+      Minuteman.redis.call("SETBIT", key, int, 1)
     end
   end
 end

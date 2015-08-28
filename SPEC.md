@@ -13,3 +13,9 @@ analyze.day(Time.now.utc)
 
 Minuteman("event:name").day | Minuteman("event2:name).day
 ```
+
+Caching:
+Cache ids in events:
+
+Minuteman::Operation:50:AND:20, Minuteman::Operation:50:OR:20
+Minuteman::Operation:(50:AND:20):AND:14

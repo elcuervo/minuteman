@@ -38,8 +38,12 @@ module Minuteman
 
       Array(users).each do |user|
         time_spans.each do |time_span|
-          key = Minuteman::Event.new(action, patterns[time_span].call(time))
-          Minuteman.redis.call("SETBIT", key, user.id, 1)
+          event = Minuteman::Event.create(
+            type: action,
+            time: patterns[time_span].call(time)
+          )
+
+          event.setbit(user.id)
         end
       end
 
@@ -64,4 +68,5 @@ end
 
 require 'minuteman/user'
 require 'minuteman/event'
+require 'minuteman/result'
 require 'minuteman/analyzer'
