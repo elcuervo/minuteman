@@ -16,14 +16,38 @@ module Minuteman
     end
     alias_method :+, :|
 
+    def ^(event)
+      operation("XOR", [self, event])
+    end
+
+    def -@()
+      operation("NOT", [self])
+    end
+    alias :~@ :-@
+
+    def -(event)
+      operation("NOT", [self, event])
+    end
+
     def count
       Minuteman.redis.call("BITCOUNT", key)
+    end
+
+    def include?(user)
+      Minuteman.redis.call("GETBIT", key, user.id) == 1
     end
 
     private
 
     def operation(action, events = [])
-      destination_key = "#{Minuteman.prefix}Operation:#{events[0].id}:#{action}:#{events[1].id}"
+      base_key = "#{Minuteman.prefix}Operation:"
+
+      destination_key = if action == "NOT"
+        "#{base_key}#{events[0]}:#{action}"
+      else
+        src, dst = events[0].id, events[1].id
+        "#{base_key}#{src}:#{action}:#{dst}"
+      end
 
       result_key = script(Minuteman::LUA_OPERATIONS,
                           0, action.upcase.to_msgpack,

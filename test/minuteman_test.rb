@@ -2,8 +2,11 @@ require 'helper'
 
 @patterns = Minuteman.patterns
 
-setup do
+prepare do
   Minuteman.redis = Redic.new("redis://127.0.0.1:6379/1")
+end
+
+setup do
   Minuteman.redis.call("FLUSHDB")
   Minuteman.patterns = @patterns
 end
@@ -71,28 +74,43 @@ test "use the method shortcut" do
   assert Minuteman("enter:website").day.count == 5
 end
 
-test "operation AND" do
-  users = Array.new(3) { Minuteman::User.create }
-  users.each do |user|
-    Minuteman.track("landing_page:new", users)
+scope "operations" do
+  setup do
+    Minuteman.redis.call("FLUSHDB")
+
+    @users = Array.new(3) { Minuteman::User.create }
+    @users.each do |user|
+      Minuteman.track("landing_page:new", @users)
+    end
+
+    Minuteman.track("buy:product", @users[0])
+    Minuteman.track("buy:product", @users[2])
   end
 
-  Minuteman.track("buy:product", users[0])
-  Minuteman.track("buy:product", users[2])
-
-  and_op = Minuteman("landing_page:new").day & Minuteman("buy:product").day
-  assert and_op.count == 2
-end
-
-test "operation OR" do
-  users = Array.new(3) { Minuteman::User.create }
-  users.each do |user|
-    Minuteman.track("landing_page:new", users)
+  test "AND" do
+    and_op = Minuteman("landing_page:new").day & Minuteman("buy:product").day
+    assert and_op.count == 2
   end
 
-  Minuteman.track("buy:product", users[0])
-  Minuteman.track("buy:product", users[2])
+  test "operation OR" do
+    or_op = Minuteman("landing_page:new").day | Minuteman("buy:product").day
+    assert or_op.count == 3
+  end
 
-  or_op = Minuteman("landing_page:new").day | Minuteman("buy:product").day
-  assert or_op.count == 3
+  test "XOR" do
+    xor_op = Minuteman("landing_page:new").day ^ Minuteman("buy:product").day
+    assert xor_op.count == 1
+  end
+
+  test "NOT" do
+    assert Minuteman("buy:product").day.include?(@users[2])
+
+    not_op = ~Minuteman("buy:product").day
+    assert !not_op.include?(@users[2])
+  end
+
+  test "MINUS" do
+  end
 end
+
+
