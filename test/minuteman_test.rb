@@ -1,8 +1,11 @@
 require 'helper'
 
+@patterns = Minuteman.patterns
+
 setup do
   Minuteman.redis = Redic.new("redis://127.0.0.1:6379/1")
   Minuteman.redis.call("FLUSHDB")
+  Minuteman.patterns = @patterns
 end
 
 test "a connection" do
@@ -51,6 +54,15 @@ test "tracks an anonymous user and the promotes it to a real one" do
 
   assert user.identifier == 42
   assert Minuteman::User[42].uid == user.uid
+end
+
+test "create your own storage patterns and access analyzer" do
+  Minuteman.patterns = {
+    dia: -> (time) { time.strftime("%Y-%m-%d") }
+  }
+
+  Minuteman.track("logeo:exitoso")
+  assert Minuteman("logeo:exitoso").dia.count == 1
 end
 
 test "use the method shortcut" do

@@ -29,8 +29,12 @@ module Minuteman
       }
     end
 
+    def patterns=(new_patterns)
+      @_patterns = new_patterns
+    end
+
     def time_spans
-      @_time_spans ||= patterns.keys
+      @_time_spans = patterns.keys
     end
 
     def track(action, users = nil, time = Time.now.utc)
