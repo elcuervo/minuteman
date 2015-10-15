@@ -106,7 +106,7 @@ scope "operations" do
   test "NOT" do
     assert Minuteman("buy:product").day.include?(@users[2])
 
-    not_op = ~Minuteman("buy:product").day
+    not_op = -Minuteman("buy:product").day
     assert !not_op.include?(@users[2])
   end
 
@@ -120,5 +120,3 @@ scope "operations" do
     assert minus_op.include?(@users[1])
   end
 end
-
-
