@@ -6,7 +6,7 @@ module Minuteman
 
     def initialize
       @redis = Ohm.redis
-      @prefix = "Minuteman::"
+      @prefix = "Minuteman"
       @patterns = {
         year:   -> (time) { time.strftime("%Y") },
         month:  -> (time) { time.strftime("%Y-%m") },

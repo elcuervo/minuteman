@@ -40,7 +40,7 @@ module Minuteman
     private
 
     def operation(action, events = [])
-      base_key = "#{Minuteman.prefix}Operation:"
+      base_key = "#{Minuteman.prefix}::Operation:"
 
       destination_key = if action == "NOT"
                           "#{base_key}#{events[0].id}:#{action}"
