@@ -3,16 +3,21 @@ require 'helper'
 @patterns = Minuteman.patterns
 
 prepare do
-  Minuteman.redis = Redic.new("redis://127.0.0.1:6379/1")
+  Minuteman.configure do |config|
+    config.redis = Redic.new("redis://127.0.0.1:6379/1")
+  end
 end
 
 setup do
-  Minuteman.redis.call("FLUSHDB")
-  Minuteman.patterns = @patterns
+  Minuteman.config.redis.call("FLUSHDB")
+
+  Minuteman.configure do |config|
+    config.patterns = @patterns
+  end
 end
 
 test "a connection" do
-  assert_equal Minuteman.redis.class, Redic
+  assert_equal Minuteman.config.redis.class, Redic
 end
 
 test "models in minuteman namespace" do
@@ -61,9 +66,11 @@ test "tracks an anonymous user and the promotes it to a real one" do
 end
 
 test "create your own storage patterns and access analyzer" do
-  Minuteman.patterns = {
-    dia: -> (time) { time.strftime("%Y-%m-%d") }
-  }
+  Minuteman.configure do |config|
+    config.patterns = {
+      dia: -> (time) { time.strftime("%Y-%m-%d") }
+    }
+  end
 
   Minuteman.track("logeo:exitoso")
   assert Minuteman("logeo:exitoso").dia.count == 1
@@ -77,7 +84,7 @@ end
 
 scope "operations" do
   setup do
-    Minuteman.redis.call("FLUSHDB")
+    Minuteman.config.redis.call("FLUSHDB")
 
     @users = Array.new(3) { Minuteman::User.create }
     @users.each do |user|
@@ -123,7 +130,7 @@ end
 
 scope "complex operations" do
   setup do
-    Minuteman.redis.call("FLUSHDB")
+    Minuteman.config.redis.call("FLUSHDB")
     @users = Array.new(6) { Minuteman::User.create }
 
     [ @users[0], @users[1], @users[2] ].each do |u|
@@ -163,5 +170,4 @@ scope "complex operations" do
 
     assert query.count == 2
   end
-
 end

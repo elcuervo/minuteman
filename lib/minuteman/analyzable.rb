@@ -30,11 +30,11 @@ module Minuteman
     end
 
     def count
-      Minuteman.redis.call("BITCOUNT", key)
+      Minuteman.config.redis.call("BITCOUNT", key)
     end
 
     def include?(user)
-      Minuteman.redis.call("GETBIT", key, user.id) == 1
+      Minuteman.config.redis.call("GETBIT", key, user.id) == 1
     end
 
     private
@@ -63,23 +63,23 @@ module Minuteman
     # Stolen from Ohm
     def script(file, *args)
       begin
-        cache = Minuteman::LUA_CACHE[Minuteman.redis.url]
+        cache = Minuteman::LUA_CACHE[Minuteman.config.redis.url]
 
         if cache.key?(file)
           sha = cache[file]
         else
           src = File.read(file)
-          sha = Minuteman.redis.call("SCRIPT", "LOAD", src)
+          sha = Minuteman.config.redis.call("SCRIPT", "LOAD", src)
 
           cache[file] = sha
         end
 
-        Minuteman.redis.call!("EVALSHA", sha, *args)
+        Minuteman.config.redis.call!("EVALSHA", sha, *args)
 
       rescue RuntimeError
         case $!.message
         when ErrorPatterns::NOSCRIPT
-          Minuteman::LUA_CACHE[Minuteman.redis.url].clear
+          Minuteman::LUA_CACHE[Minuteman.config.redis.url].clear
           retry
         when ErrorPatterns::DUPLICATE
           raise UniqueIndexViolation, $1

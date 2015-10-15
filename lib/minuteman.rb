@@ -5,32 +5,20 @@ module Minuteman
   LUA_OPERATIONS = File.expand_path("../minuteman/lua/operations.lua",   __FILE__)
 
   class << self
-    def redis
-      @_redis ||= Ohm.redis
+    def config
+      @_configuration ||= Configuration.new
     end
 
-    def redis=(redis)
-      @_redis = redis
-
-      Ohm.redis = @_redis
+    def configure
+      yield(config)
     end
 
     def prefix
-      @_prefix ||= "Minuteman::"
+      config.prefix
     end
 
     def patterns
-      @_patterns ||= {
-        year:   -> (time) { time.strftime("%Y") },
-        month:  -> (time) { time.strftime("%Y-%m") },
-        day:    -> (time) { time.strftime("%Y-%m-%d") },
-        hour:   -> (time) { time.strftime("%Y-%m-%d %H") },
-        minute: -> (time) { time.strftime("%Y-%m-%d %H:%m") },
-      }
-    end
-
-    def patterns=(new_patterns)
-      @_patterns = new_patterns
+      config.patterns
     end
 
     def time_spans
@@ -74,3 +62,4 @@ require 'minuteman/user'
 require 'minuteman/event'
 require 'minuteman/result'
 require 'minuteman/analyzer'
+require 'minuteman/configuration'

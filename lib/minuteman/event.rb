@@ -10,7 +10,7 @@ module Minuteman
 
     def self.find(*args)
       looked_up = "#{self.class}::#{args.first[:type]}:#{args.first[:time]}:id"
-      potential_id = Minuteman.redis.call("GET", looked_up)
+      potential_id = Minuteman.config.redis.call("GET", looked_up)
       self[potential_id]
     end
 
@@ -20,7 +20,7 @@ module Minuteman
 
     def self.create(*args)
       event = super(*args)
-      Minuteman.redis.call("SET", "#{event.key}:id", event.id)
+      Minuteman.config.redis.call("SET", "#{event.key}:id", event.id)
       event
     end
 
@@ -29,7 +29,7 @@ module Minuteman
     end
 
     def setbit(int)
-      Minuteman.redis.call("SETBIT", key, int, 1)
+      Minuteman.config.redis.call("SETBIT", key, int, 1)
     end
   end
 end
