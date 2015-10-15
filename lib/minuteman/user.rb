@@ -1,10 +1,8 @@
 require 'ohm'
 require 'securerandom'
 
-require 'minuteman/model'
-
 module Minuteman
-  class User < Minuteman::Model
+  class User < ::Ohm::Model
     attribute :uid
     attribute :identifier
 

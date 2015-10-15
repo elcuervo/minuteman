@@ -2,7 +2,7 @@ require 'minuteman/event'
 
 module Minuteman
   class Analyzer
-    def initialize(action)
+    def initialize(action, klass = Minuteman::Event)
       @action = action
 
       Minuteman.patterns.keys.each do |method|
@@ -12,7 +12,7 @@ module Minuteman
           end
 
           key = Minuteman.patterns[method].call(time)
-          Minuteman::Event.find_or_create(type: action, time: key)
+          klass.find_or_create(type: action, time: key)
         end
       end
     end

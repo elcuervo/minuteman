@@ -171,3 +171,9 @@ scope "complex operations" do
     assert query.count == 2
   end
 end
+
+test "Count a given event" do
+  10.times { Minuteman.count("enter:new_landing") }
+
+  assert Counterman("enter:new_landing").day.count == 10
+end

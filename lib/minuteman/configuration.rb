@@ -14,7 +14,6 @@ module Minuteman
         hour:   -> (time) { time.strftime("%Y-%m-%d %H") },
         minute: -> (time) { time.strftime("%Y-%m-%d %H:%m") },
       }
-
     end
 
     def redis=(redis)
