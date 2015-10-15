@@ -54,124 +54,151 @@ And then install the gem
 gem install minuteman
 ```
 
-## Usage
+### Configuration
 
-Currently Minutemen supports two options `:silent (default: false)` and `:redis
-(default: {})`
-
-### Options
-
-**silent**: when `true` the operations will not raise errors to prevent failures
-
-**time_spans**: an `Array` of Minuteman compatible `TimeSpan`. Eg. `%w[year month
-day]` will only track events on that timespans. Ignoring the rest
-
-**redis**: can be a Hash with the options to be sent to `Redis.new` or a `Redis`
-connection already established (`Redis::Namespace` works as well).
+Configuration exists within the `config` block:
 
 ```ruby
-require "minuteman"
+Minuteman.configure do |config|
+  # You need to use Redic to define a new Redis connection
+  config.redis = Redic.new("redis://127.0.0.1:6379/1")
 
-# Accepts an options[:redis] hash that will be sent as is to Redis.new
-analytics = Minuteman.new
+  # The prefix affects operations
+  config.prefix = "Tomato"
 
-# You can also reuse your Redis or Redis::Namespace connection
-analytics = Minuteman.new(redis: Redis::Namespace.new(:mm, redis: Redis.new))
-
-# Mark an event for a given id
-analytics.track("login:successful", user.id)
-analytics.track("login:successful", other_user.id)
-
-# Mark in bulk
-analytics.track("programming:love:ruby", User.where(favorite: "ruby").pluck(:id))
-
-# Fetch events for a given time (default is Time.now.utc)
-today_events = analytics.day("login:successful", Time.now.utc)
-
-# This also exists
-analytics.year("login:successful")
-analytics.month("login:successful")
-analytics.week("login:successful")
-analytics.day("login:successful")
-analytics.hour("login:successful")
-analytics.minute("login:successful")
-
-# Lists all the tracked events
-analytics.events
-#=> ["login:successful", "programming:login:ruby"]
-
-# Check event length on a given time
-today_events.length
-#=> 2
-
-# Check for existance
-today_events.include?(user.id)
-#=> true
-today_events.include?(admin.id)
-#=> false
-
-# Bulk check
-today_events.include?(User.all.pluck(:id))
-#=> [true, true, false, false]
-```
-
-## Bitwise operations
-
-You can intersect sets using bitwise AND(`&`), OR(`|`), NOT(`~`, `-`) and XOR(`^`).
-Also you can use plus(`+`) and minus(`-`) operations.
-
-```ruby
-set1 + set2
-set1 - set2
-set1 & set2
-set1 | set2
-set1 ^ set2
-
-~set1 \
-       |==> This are the same
--set1 /
-```
-
-### Intersecting with arrays
-
-Let's assume this scenario:
-
-You have a list of users and want to know which of them have been going throught
-some of the tracks you made.
-
-```ruby
-paid = analytics.month("buy:complete")
-payed_from_miami = paid & User.find_all_by_state("MIA").map(&:id)
-payed_from_miami.size
-#=> 43
-payed_users_from_miami = payed_from_miami.map { |id| User.find(id) }
-```
-
-Currently the supported commands to interact with arrays are `&` and `-`
-
-### Example
-
-```ruby
-invited = analytics.month("email:invitation")
-successful_buys = analytics.month("buy:complete")
-
-successful_buys_after_invitation = invited & successful_buys
-successful_buys_after_invitation.include?(user.id)
-
-# Clean up all the operations cache
-analytics.reset_operations_cache
-```
-
-Also you can write more complex set operations
-
-```ruby
-invited = analytics.month("email:invitation")
-from_adsense = analytics.month("adsense:promo")
-successful_buys = analytics.month("buy:complete")
-
-conversion_rate = (invited | from_adsense) & successful_buys
+  # The patterns is what Minuteman uses for the tracking/counting and the
+  # different analyzers
+  config.patterns = {
+    dia: -> (time) { time.strftime("%Y-%m-%d") }
+  }
+end
 ```
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/elcuervo/minuteman/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+## Tracking
 
+Tracking is the most basic scenario for Minuteman:
+
+```ruby
+# This will create the "landing:new" event in all the defined patterns and since
+# there is no user here it will create an annonymous one.
+# This user only exists in the Minuteman context.
+user = Minuteman.track("landing:new")
+
+# The id it's an internal representation, not useful for you
+user.id  # => "1"
+
+# This is the unique id. With this you can have an identifier for the user
+user.uid # => "787c8770-0ac2-4654-9fa4-e57d152fa341"
+
+# You can use the `user` to keep tracking things:
+user.track("register:page")
+
+# Or use it as an argument
+Minuteman.track("help:page", user)
+
+# Or track several users at once
+Minuteman.track("help:page", [user1, user2, user3])
+
+# By default all the tracking and counting events are triggered with `Time.now.utc`
+# but you can change that as well:
+Minuteman.track("setup:account", user, Time.new(2010, 2, 10))
+```
+
+## Analysis
+
+There is a powerful engine behind all the operations which is Redis + Lua <3
+
+```ruby
+# The analysis of information relies on `Minuteman.patterns` and if you don't
+# change it you'll get acess to `year`, `month`, `day`, `hour`, `minute`.
+# To get information about `register:page` for today:
+Minuteman.analyze("register:page").day
+
+# You can always pass a `Time` instance to set the time you need information.
+Minuteman.analyze("register:page").day(Time.new(2004, 2, 12))
+
+# You also have a shorthand for analysis:
+register_page_month = Minuteman("register:page").month
+
+# And the power of Minuteman relies on the operations you can do with that.
+# Counting the amount:
+register_page_month.count # => 10
+
+# Or knowing if a user is included in that set:
+register_page_month.include?(User[42]) # => true
+
+# But the most important part is the ability to do bit operations on that:
+# You can intersect sets using bitwise AND(`&`), OR(`|`), NOT(`~`, `-`) and XOR(`^`).
+# Also you can use plus(`+`) and minus(`-`) operations.
+# In this example we'll get all the users that accessed our site via a promo
+# invite but didn't buy anything
+(
+  Minuteman("promo:email").day & Minuteman("promo:google").day
+) - Minuteman("buy:success").day
+```
+
+## Counting
+
+Since Minuteman 2.0 there's the possibility to have counters.
+
+```ruby
+# Counting works in a very similar way to tracking but with some important
+# differences. Trackings are idempotent unlike countings and they do not provide
+# operations between sets... you can use plain ruby for that.
+# This will add 1 to the `hits:page` counter:
+Minuteman.add("hits:page")
+
+# You can also pass a `Time` instance to define when this tracking ocurred:
+Minuteman.add("hits:page", Time.new(2012, 20, 01))
+
+# And you can also send users to also count the times that given user did that
+# event
+Minuteman.add("hits:page", Time.new(2012, 20, 01), user)
+
+# You can access counting information similar to tracking:
+Minuteman.count("hits:page").day.count # => 201
+
+# Or with a shorthand:
+Counterman("hits:page").day.count # => 201
+```
+
+## Users
+
+Minuteman 2.0 adds the concept of users which can be annonymous or have a
+relation with your own database.
+
+```ruby
+# This will create an annonymous user
+user = Minuteman::User.create
+
+# Users are just a part of Minuteman and do not interfere with your own.
+# They do have some properties like a unique identifier you can use to find it
+# in the future
+user.uid # => "787c8770-0ac2-4654-9fa4-e57d152fa341"
+
+# User lookup works like this:
+# And you can use that unique identifier as a key in a cookie to see what your
+# uses do when no one is looking
+Minuteman::User['787c8770-0ac2-4654-9fa4-e57d152fa341']
+
+# But since the point is to be able to get tied to your data you can promote a
+# user, from anonymous to "real"
+user.promote(123)
+
+# Lookups also work with promoted ids
+Minuteman::User["123"]
+
+# Having a user you can do all the same operations minus the hussle.
+# Like tracking:
+user.track("user:login")
+
+# or adding:
+user.add("failed:login")
+
+# or counting
+user.count("failed:login").month.count # => 23
+
+# But also the counted events go to the big picture
+Counterman("failed:login").month.count # => 512
+```
