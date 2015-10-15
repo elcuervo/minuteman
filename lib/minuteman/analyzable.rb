@@ -26,7 +26,7 @@ module Minuteman
     alias :~@ :-@
 
     def -(event)
-      operation("NOT", [self, event])
+      operation("MINUS", [self, event])
     end
 
     def count
@@ -43,11 +43,11 @@ module Minuteman
       base_key = "#{Minuteman.prefix}Operation:"
 
       destination_key = if action == "NOT"
-        "#{base_key}#{events[0]}:#{action}"
-      else
-        src, dst = events[0].id, events[1].id
-        "#{base_key}#{src}:#{action}:#{dst}"
-      end
+                          "#{base_key}#{events[0].id}:#{action}"
+                        else
+                          src, dst = events[0].id, events[1].id
+                          "#{base_key}#{src}:#{action}:#{dst}"
+                        end
 
       result_key = script(Minuteman::LUA_OPERATIONS,
                           0, action.upcase.to_msgpack,

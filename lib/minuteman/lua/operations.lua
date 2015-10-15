@@ -20,16 +20,10 @@ local function NOT(keys) return operate("NOT", keys) end
 
 local function MINUS(keys)
   local items = keys
-  local dest = table.remove(items, 1)
+  local src = table.remove(items, 1)
+  local and_op = AND(keys)
 
-  while table.getn(items) > 0 do
-    local other = table.remove(items, 1)
-    local and_op = AND(dest, other)
-
-    dest = XOR(dest, and_op)
-  end
-
-  return dest
+  return XOR({ src, and_op })
 end
 
 local function operation(action, keys)

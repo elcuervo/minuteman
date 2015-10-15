@@ -110,6 +110,13 @@ scope "operations" do
   end
 
   test "MINUS" do
+    assert Minuteman("landing_page:new").day.include?(@users[2])
+    assert Minuteman("buy:product").day.include?(@users[2])
+
+    minus_op = Minuteman("landing_page:new").day - Minuteman("buy:product").day
+
+    assert !minus_op.include?(@users[2])
+    assert minus_op.include?(@users[1])
   end
 end
 
