@@ -42,14 +42,26 @@ module Minuteman
       users
     end
 
-    def count(action, time = Time.now.utc)
+    def add(action, time = Time.now.utc, users = [])
       time_spans.each do |time_span|
-        counter = Minuteman::Counter.create(
+        counter = Minuteman::Counter.create({
           type: action,
           time: patterns[time_span].call(time)
-        )
+        })
 
         counter.incr
+      end
+
+      Array(users).each do |user|
+        time_spans.each do |time_span|
+          counter = Minuteman::Counter::User.create({
+            user_id: user.id,
+            type: action,
+            time: patterns[time_span].call(time)
+          })
+
+          counter.incr
+        end
       end
     end
 
@@ -57,8 +69,8 @@ module Minuteman
       analyzers_cache[action]
     end
 
-    def statistics(action)
-      statistics_cache[action]
+    def count(action)
+      counters_cache[action]
     end
 
     private
@@ -69,8 +81,8 @@ module Minuteman
       end
     end
 
-    def statistics_cache
-      @_statistics_cache ||= Hash.new do |h,k|
+    def counters_cache
+      @_counters_cache ||= Hash.new do |h,k|
         h[k] = Minuteman::Analyzer.new(k, Minuteman::Counter)
       end
     end
@@ -82,7 +94,7 @@ def Minuteman(action)
 end
 
 def Counterman(action)
-  Minuteman.statistics(action)
+  Minuteman.count(action)
 end
 
 require 'minuteman/user'

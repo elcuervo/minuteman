@@ -14,6 +14,18 @@ module Minuteman
       super
     end
 
+    def track(action, time = Time.now.utc)
+      Minuteman.track(action, self, time)
+    end
+
+    def add(action, time = Time.now.utc)
+      Minuteman.add(action, time, self)
+    end
+
+    def count(action, time = Time.now.utc)
+      Minuteman::Analyzer.new(action, Minuteman::Counter::User, self)
+    end
+
     def promote(identifier)
       self.identifier = identifier
       save

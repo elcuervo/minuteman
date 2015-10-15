@@ -173,7 +173,7 @@ scope "complex operations" do
 end
 
 test "count a given event" do
-  10.times { Minuteman.count("enter:new_landing") }
+  10.times { Minuteman.add("enter:new_landing") }
 
   assert Counterman("enter:new_landing").day.count == 10
 end
@@ -182,9 +182,23 @@ test "count events on some dates" do
   day = Time.new(2015, 10, 15)
   next_day = Time.new(2015, 10, 16)
 
-  5.times { Minuteman.count("drink:beer", day) }
-  2.times { Minuteman.count("drink:beer", next_day) }
+  5.times { Minuteman.add("drink:beer", day) }
+  2.times { Minuteman.add("drink:beer", next_day) }
 
   assert Counterman("drink:beer").month(day).count == 7
   assert Counterman("drink:beer").day(day).count == 5
+end
+
+scope "do actions through a user" do
+  test "track an event" do
+    user = Minuteman::User.create
+    user.track("login:page")
+
+    3.times { user.add("login:attempts") }
+    2.times { Minuteman.add("login:attempts") }
+
+    assert Minuteman("login:page").day.include?(user)
+    assert Counterman("login:attempts").day.count == 5
+    assert user.count("login:attempts").day.count == 3
+  end
 end
