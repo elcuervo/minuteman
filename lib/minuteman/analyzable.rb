@@ -55,7 +55,9 @@ module Minuteman
                           destination_key.to_msgpack
                          )
 
-      Minuteman::Result.new(result_key)
+      id = result_key.gsub(base_key, "")
+
+      Minuteman::Result.new("(#{id})", result_key)
     end
 
     # Stolen from Ohm

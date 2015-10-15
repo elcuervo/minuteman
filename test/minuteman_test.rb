@@ -120,3 +120,48 @@ scope "operations" do
     assert minus_op.include?(@users[1])
   end
 end
+
+scope "complex operations" do
+  setup do
+    Minuteman.redis.call("FLUSHDB")
+    @users = Array.new(6) { Minuteman::User.create }
+
+    [ @users[0], @users[1], @users[2] ].each do |u|
+      Minuteman.track("promo:email", u)
+    end
+
+    [ @users[3], @users[4], @users[5] ].each do |u|
+      Minuteman.track("promo:facebook", u)
+    end
+
+    [ @users[1], @users[4], @users[6] ].each do |u|
+      Minuteman.track("user:new", u)
+    end
+  end
+
+  test "verbose" do
+    got_promos = Minuteman("promo:email").day + Minuteman("promo:facebook").day
+
+    @users[0..5].each do |u|
+      assert got_promos.include?(u)
+    end
+
+    new_users = Minuteman("user:new").day
+    query = got_promos & new_users
+
+    [ @users[1], @users[4] ].each do |u|
+      assert query.include?(u)
+    end
+
+    assert query.count == 2
+  end
+
+  test "readable" do
+    query = (
+      Minuteman("promo:email").day + Minuteman("promo:facebook").day
+    ) & Minuteman("user:new").day
+
+    assert query.count == 2
+  end
+
+end
