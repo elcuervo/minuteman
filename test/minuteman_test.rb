@@ -57,6 +57,7 @@ test "tracks an anonymous user and the promotes it to a real one" do
 
   assert user.identifier == 42
   assert Minuteman::User[42].uid == user.uid
+  assert Minuteman("enter:website").day.include?(user)
 end
 
 test "create your own storage patterns and access analyzer" do
@@ -92,7 +93,7 @@ scope "operations" do
     assert and_op.count == 2
   end
 
-  test "operation OR" do
+  test "OR" do
     or_op = Minuteman("landing_page:new").day | Minuteman("buy:product").day
     assert or_op.count == 3
   end

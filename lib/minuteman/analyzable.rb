@@ -58,7 +58,7 @@ module Minuteman
       Minuteman::Result.new(result_key)
     end
 
-    # Stolen
+    # Stolen from Ohm
     def script(file, *args)
       begin
         cache = Minuteman::LUA_CACHE[Minuteman.redis.url]
