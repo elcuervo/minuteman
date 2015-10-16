@@ -41,7 +41,7 @@ test "access a user with and id or an uuid" do
 end
 
 test "track an anonymous user" do
-  user = Minuteman.track("unknown")
+  user = Minuteman.track("anonymous:user")
   assert user.uid
 end
 

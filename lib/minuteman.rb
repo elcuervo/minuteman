@@ -31,7 +31,7 @@ module Minuteman
       Array(users).each do |user|
         process do
           time_spans.each do |time_span|
-            event = Minuteman::Event.create(
+            event = Minuteman::Event.find_or_create(
               type: action,
               time: patterns[time_span].call(time)
             )

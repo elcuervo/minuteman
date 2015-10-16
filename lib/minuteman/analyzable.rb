@@ -39,6 +39,10 @@ module Minuteman
 
     private
 
+    def key_exists?(key)
+      Minuteman.config.redis.call("EXISTS", key) == 1
+    end
+
     def operation(action, events = [])
       base_key = "#{Minuteman.prefix}::Operation:"
 
@@ -49,15 +53,16 @@ module Minuteman
                           "#{base_key}#{src}:#{action}:#{dst}"
                         end
 
-      result_key = script(Minuteman::LUA_OPERATIONS,
-                          0, action.upcase.to_msgpack,
-                          events.map(&:key).to_msgpack,
-                          destination_key.to_msgpack
-                         )
+      id = destination_key.gsub(base_key, "")
 
-      id = result_key.gsub(base_key, "")
+      if key_exists?(destination_key)
+        return Minuteman::Result.new("(#{id})", destination_key)
+      end
 
-      Minuteman::Result.new("(#{id})", result_key)
+      script(Minuteman::LUA_OPERATIONS, 0, action.upcase.to_msgpack,
+             events.map(&:key).to_msgpack, destination_key.to_msgpack)
+
+      Minuteman::Result.new("(#{id})", destination_key)
     end
 
     # Stolen from Ohm

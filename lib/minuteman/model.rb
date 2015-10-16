@@ -6,9 +6,16 @@ module Minuteman
     attribute :time
 
     def self.find(*args)
-      looked_up = "#{self.class}::#{args.first[:type]}:#{args.first[:time]}:id"
+      looked_up = "#{self.name}::#{args.first[:type]}:#{args.first[:time]}:id"
       potential_id = Minuteman.config.redis.call("GET", looked_up)
-      self[potential_id]
+
+      return nil if !potential_id
+
+      event = self[potential_id]
+      event.type = args.first[:type]
+      event.time = args.first[:time]
+
+      event
     end
 
     def self.find_or_create(*args)
@@ -22,7 +29,7 @@ module Minuteman
     end
 
     def key
-      "#{self.class}::#{type}:#{time}"
+      "#{self.class.name}::#{type}:#{time}"
     end
 
   end
