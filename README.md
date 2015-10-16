@@ -4,17 +4,11 @@
 [![Code Climate](https://codeclimate.com/github/elcuervo/minuteman.png)](https://codeclimate.com/github/elcuervo/minuteman)
 [![Build Status](https://secure.travis-ci.org/elcuervo/minuteman.png?branch=master)](https://travis-ci.org/elcuervo/minuteman)
 
-_Wikipedia_: Minutemen were members of teams from Massachusetts that were well-prepared
+> Minutemen were members of teams from Massachusetts that were well-prepared
 militia companies of select men from the American colonial partisan militia
 during the American Revolutionary War. _They provided a highly mobile, rapidly
 deployed force that allowed the colonies to respond immediately to war threats,
 hence the name._
-
-## Inspiration
-
-* http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/
-* http://amix.dk/blog/post/19714
-* http://en.wikipedia.org/wiki/Bit_array
 
 ## Installation
 
