@@ -44,7 +44,7 @@ module Minuteman
     end
 
     def operation(action, events = [])
-      base_key = "#{Minuteman.prefix}::Operation:"
+      base_key = Minuteman.config.operations_prefix
 
       destination_key = if action == "NOT"
                           "#{base_key}#{events[0].id}:#{action}"
@@ -53,16 +53,14 @@ module Minuteman
                           "#{base_key}#{src}:#{action}:#{dst}"
                         end
 
-      id = destination_key.gsub(base_key, "")
-
       if key_exists?(destination_key)
-        return Minuteman::Result.new("(#{id})", destination_key)
+        return Minuteman::Result.new(destination_key)
       end
 
       script(Minuteman::LUA_OPERATIONS, 0, action.upcase.to_msgpack,
              events.map(&:key).to_msgpack, destination_key.to_msgpack)
 
-      Minuteman::Result.new("(#{id})", destination_key)
+      Minuteman::Result.new(destination_key)
     end
 
     # Stolen from Ohm

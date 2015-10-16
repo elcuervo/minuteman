@@ -1,12 +1,12 @@
 module Minuteman
   class Configuration
-    attr_accessor :redis, :patterns, :prefix, :parallel, :cache
+    attr_accessor :redis, :patterns, :prefix, :parallel, :operations_prefix
 
     def initialize
       @redis = Ohm.redis
-      @prefix = "Minuteman"
+      @prefix = "Minuteman".freeze
+      @operations_prefix = "#{@prefix}::Operations:"
       @parallel = false
-      @cache = true
 
       @patterns = {
         year:   -> (time) { time.strftime("%Y") },
