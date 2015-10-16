@@ -29,13 +29,15 @@ module Minuteman
       users = Minuteman::User.create if users.nil?
 
       Array(users).each do |user|
-        time_spans.each do |time_span|
-          event = Minuteman::Event.create(
-            type: action,
-            time: patterns[time_span].call(time)
-          )
+        process do
+          time_spans.each do |time_span|
+            event = Minuteman::Event.create(
+              type: action,
+              time: patterns[time_span].call(time)
+            )
 
-          event.setbit(user.id)
+            event.setbit(user.id)
+          end
         end
       end
 
@@ -44,12 +46,14 @@ module Minuteman
 
     def add(action, time = Time.now.utc, users = [])
       time_spans.each do |time_span|
-        counter = Minuteman::Counter.create({
-          type: action,
-          time: patterns[time_span].call(time)
-        })
+        process do
+          counter = Minuteman::Counter.create({
+            type: action,
+            time: patterns[time_span].call(time)
+          })
 
-        counter.incr
+          counter.incr
+        end
       end
 
       Array(users).each do |user|
@@ -74,6 +78,14 @@ module Minuteman
     end
 
     private
+
+    def process(&block)
+      if !!config.parallel
+        Thread.current(&block)
+      else
+        block.call
+      end
+    end
 
     def analyzers_cache
       @_analyzers_cache ||= Hash.new do |h,k|

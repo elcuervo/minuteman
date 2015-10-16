@@ -3,6 +3,7 @@ require 'benchmark'
 
 Minuteman.configure do |config|
   config.redis = Redic.new("redis://127.0.0.1:6379/1")
+  config.parallel = true
 end
 
 Minuteman.config.redis.call("FLUSHDB")
