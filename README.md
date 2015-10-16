@@ -10,22 +10,6 @@ during the American Revolutionary War. _They provided a highly mobile, rapidly
 deployed force that allowed the colonies to respond immediately to war threats,
 hence the name._
 
-## Origin
-Freenode - #cuba.rb - 2012/10/30 15:20 UYT
-
-**conanbatt:** anyone here knows some good web app metrics tool ?
-
-**conanbatt:** i use google analytics for the page itself, and its good, but for the webapp its really not useful
-
-**tizoc: conanbatt:** http://amix.dk/blog/post/19714 you can port this (if an equivalent doesn't exist already)
-
-**conanbatt:** the metrics link is excellent but its python and released 5 days ago lol
-
-**elcuervo: tizoc:** the idea it's awesome
-
-**elcuervo:** interesting...
-
-
 ## Inspiration
 
 * http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/
@@ -33,22 +17,6 @@ Freenode - #cuba.rb - 2012/10/30 15:20 UYT
 * http://en.wikipedia.org/wiki/Bit_array
 
 ## Installation
-
-### Important!
-
-Depends on Redis 2.6 for the `bitop` operation. You can install it using:
-
-```bash
-brew install redis
-```
-
-or upgrading your current version:
-
-```bash
-brew upgrade redis
-```
-
-And then install the gem
 
 ```bash
 gem install minuteman
@@ -73,7 +41,6 @@ Minuteman.configure do |config|
   }
 end
 ```
-
 
 ## Tracking
 
