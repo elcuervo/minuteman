@@ -49,7 +49,7 @@ different people. Thanks to them I've built Minuteman:
 <figure>
   <img src="img/simple-intersection.png" alt="" />
   <img src="img/complex-intersection.png" alt="" />
-  <figcaption> This is the Veen representation of the operation, the power off
+  <figcaption> This is the Venn representation of the operation, the power off
   Minuteman It's the ablitity to merge and substract groups. </figcaption>
 </figure>
 
