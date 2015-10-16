@@ -6,7 +6,7 @@ Rake::TestTask.new("test") do |t|
 end
 
 Rake::TestTask.new("bench") do |t|
-  t.pattern = "test/bench/*_bench.rb"
+  t.pattern = "test/**/*_bench.rb"
 end
 
 task :default => [:test]
