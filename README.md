@@ -14,7 +14,7 @@ hence the name._
 ## Installation
 
 ```bash
-gem install minuteman
+gem install minuteman --pre
 ```
 
 ### Configuration
