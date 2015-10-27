@@ -2,7 +2,8 @@
 
 # Minuteman
 [![Code Climate](https://codeclimate.com/github/elcuervo/minuteman.png)](https://codeclimate.com/github/elcuervo/minuteman)
-[![Build Status](https://secure.travis-ci.org/elcuervo/minuteman.png?branch=master)](https://travis-ci.org/elcuervo/minuteman)
+
+[![Build Status](https://travis-ci.org/elcuervo/minuteman.svg)](https://travis-ci.org/elcuervo/minuteman)
 
 > Minutemen were members of teams from Massachusetts that were well-prepared
 militia companies of select men from the American colonial partisan militia
