@@ -5,10 +5,6 @@ module Minuteman
     def initialize(action, klass = Minuteman::Event, user = nil)
       Minuteman.patterns.keys.each do |method|
         define_singleton_method(method) do |time = Time.now.utc|
-          if !Minuteman.patterns.include?(method)
-            raise MissingPattern.new(method)
-          end
-
           key = Minuteman.patterns[method].call(time)
           search = { type: action, time: key }
           search[:user_id] = user.id if !user.nil?
