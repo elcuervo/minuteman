@@ -202,3 +202,16 @@ scope "do actions through a user" do
     assert user.count("login:attempts").day.count == 3
   end
 end
+
+test "get all the created events" do
+  Minuteman.config.redis.call("FLUSHDB")
+
+  assert Minuteman.events.count == 0
+
+  10.times { |i|
+    Minuteman.track("test:#{i}")
+  }
+
+  assert Minuteman.events.count == 10
+  assert Minuteman.events.include?("test:5")
+end

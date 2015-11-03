@@ -25,6 +25,10 @@ module Minuteman
       @_time_spans = patterns.keys
     end
 
+    def events
+      config.redis.call("SMEMBERS", "#{Minuteman.prefix}::Events")
+    end
+
     def track(action, users = nil, time = Time.now.utc)
       users = Minuteman::User.create if users.nil?
 

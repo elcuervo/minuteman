@@ -24,7 +24,9 @@ module Minuteman
 
     def self.create(*args)
       event = super(*args)
+      Minuteman.config.redis.call("SADD", "#{Minuteman.prefix}::Events", event.type)
       Minuteman.config.redis.call("SET", "#{event.key}:id", event.id)
+
       event
     end
 
