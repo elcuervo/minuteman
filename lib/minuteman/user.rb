@@ -9,8 +9,11 @@ module Minuteman
     unique :uid
     unique :identifier
 
+    index :identifier
+
     def save
       self.uid ||= SecureRandom.uuid
+      self.identifier ||= ""
       super
     end
 
