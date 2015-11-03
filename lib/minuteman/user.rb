@@ -5,15 +5,16 @@ module Minuteman
   class User < ::Ohm::Model
     attribute :uid
     attribute :identifier
+    attribute :anonymous
 
     unique :uid
     unique :identifier
 
-    index :identifier
+    index :anonymous
 
     def save
       self.uid ||= SecureRandom.uuid
-      self.identifier ||= ""
+      self.anonymous ||= !identifier
       super
     end
 
@@ -29,8 +30,13 @@ module Minuteman
       Minuteman::Analyzer.new(action, Minuteman::Counter::User, self)
     end
 
+    def anonymous?
+      self.anonymous == true
+    end
+
     def promote(identifier)
       self.identifier = identifier
+      self.anonymous = false
       save
     end
 

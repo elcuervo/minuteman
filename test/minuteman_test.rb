@@ -215,3 +215,13 @@ test "get all the created events" do
   assert Minuteman.events.count == 10
   assert Minuteman.events.include?("test:5")
 end
+
+test "users are anonymous if they don't have an identifier" do
+  user = Minuteman.track("some_event")
+
+  assert user.anonymous? == true
+
+  user.promote 123
+
+  assert user.anonymous? == false
+end
