@@ -63,7 +63,8 @@ module Minuteman
       Minuteman::Result.new(destination_key)
     end
 
-    # Stolen from Ohm
+    # Code taken from Ohm. Just small changes to adapt to the current Minuteman
+    # stuff. elcuervo <3 (soveran + djanowski)
     def script(file, *args)
       begin
         cache = Minuteman::LUA_CACHE[Minuteman.config.redis.url]
@@ -91,6 +92,5 @@ module Minuteman
         end
       end
     end
-
   end
 end
