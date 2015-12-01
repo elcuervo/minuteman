@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "minuteman"
-  s.version           = "2.0.0.pre"
+  s.version           = "2.0.0"
   s.summary           = "Bit Analytics"
   s.description       = "Fast and furious tracking system using Redis bitwise operations"
   s.authors           = ["elcuervo"]
