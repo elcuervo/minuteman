@@ -105,10 +105,13 @@ module Minuteman
   end
 end
 
+# Helper method to easily access the analytics part
 def Minuteman(action)
   Minuteman.analyze(action)
 end
 
+# Why call this method so different from Minuteman?
+# for the lulz: https://github.com/maccman/counterman/issues/1
 def Counterman(action)
   Minuteman.count(action)
 end
