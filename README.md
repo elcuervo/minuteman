@@ -141,7 +141,7 @@ user.uid # => "787c8770-0ac2-4654-9fa4-e57d152fa341"
 
 # User lookup works like this:
 # And you can use that unique identifier as a key in a cookie to see what your
-# uses do when no one is looking
+# users do when no one is looking
 Minuteman::User['787c8770-0ac2-4654-9fa4-e57d152fa341']
 
 # But since the point is to be able to get tied to your data you can promote a
