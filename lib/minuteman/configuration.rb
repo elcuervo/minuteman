@@ -13,7 +13,7 @@ module Minuteman
         month:  -> (time) { time.strftime("%Y-%m") },
         day:    -> (time) { time.strftime("%Y-%m-%d") },
         hour:   -> (time) { time.strftime("%Y-%m-%d %H") },
-        minute: -> (time) { time.strftime("%Y-%m-%d %H:%m") },
+        minute: -> (time) { time.strftime("%Y-%m-%d %H:%M") },
       }
     end
 
