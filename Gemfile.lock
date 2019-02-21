@@ -2,9 +2,9 @@ PATH
   remote: .
   specs:
     minuteman (3.0.0)
-      nest (~> 3.1.2)
-      ohm (~> 3.1.1)
-      redic (~> 1.5.1)
+      nest (~> 3.1)
+      ohm (~> 3.1)
+      redic (~> 1.5)
 
 GEM
   remote: https://rubygems.org/
@@ -29,7 +29,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  cutest (~> 1.2.3)
+  cutest (~> 1.2)
   minuteman!
   rake
 
