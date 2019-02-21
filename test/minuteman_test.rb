@@ -21,7 +21,8 @@ test "a connection" do
 end
 
 test "models in minuteman namespace" do
-  assert_equal Minuteman::User.create.key, "Minuteman::User:1"
+  namespace = Minuteman::User.create.key.to_s
+  assert_equal namespace, "Minuteman::User:1"
 end
 
 test "an anonymous user" do
@@ -51,7 +52,7 @@ test "track an user" do
   assert Minuteman.track("login:successful", user)
 
   analyzer = Minuteman.analyze("login:successful")
-  assert analyzer.day(Time.now.utc).count == 1
+  assert_equal analyzer.day(Time.now.utc).count, 1
 end
 
 test "tracks an anonymous user and the promotes it to a real one" do

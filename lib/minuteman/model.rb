@@ -31,8 +31,7 @@ module Minuteman
     end
 
     def key
-      "#{self.class.name}::#{type}:#{time}"
+      Nest.new("#{self.class.name}::#{type}:#{time}", Minuteman.config.redis)
     end
-
   end
 end

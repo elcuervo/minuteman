@@ -1,9 +1,9 @@
 ---
 redis.log(redis.LOG_NOTICE, 'Minuteman')
 
-local action = cmsgpack.unpack(ARGV[1])
-local keys = cmsgpack.unpack(ARGV[2])
-local dest = cmsgpack.unpack(ARGV[3])
+local action = cjson.decode(ARGV[1])
+local keys = cjson.decode(ARGV[2])
+local dest = cjson.decode(ARGV[3])
 
 local function operate(action, keys)
   if type(keys) == "string" then keys = { keys } end
