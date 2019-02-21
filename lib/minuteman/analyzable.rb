@@ -1,5 +1,3 @@
-require 'msgpack'
-
 module Minuteman
   module Analyzable
     module ErrorPatterns
@@ -57,8 +55,8 @@ module Minuteman
         return Minuteman::Result.new(destination_key)
       end
 
-      script(Minuteman::LUA_OPERATIONS, 0, action.upcase.to_msgpack,
-             events.map(&:key).to_msgpack, destination_key.to_msgpack)
+      script(Minuteman::LUA_OPERATIONS, 0, action.upcase.to_json,
+             events.map(&:key).to_json, destination_key.to_json)
 
       Minuteman::Result.new(destination_key)
     end

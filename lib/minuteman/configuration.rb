@@ -1,6 +1,7 @@
 module Minuteman
   class Configuration
-    attr_accessor :redis, :patterns, :prefix, :parallel, :operations_prefix
+    attr_reader :redis
+    attr_accessor :patterns, :prefix, :parallel, :operations_prefix
 
     def initialize
       @redis = Ohm.redis

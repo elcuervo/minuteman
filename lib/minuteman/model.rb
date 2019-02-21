@@ -1,4 +1,5 @@
-require 'ohm'
+require "ohm"
+require "nest"
 
 module Minuteman
   class Model < ::Ohm::Model
@@ -31,8 +32,7 @@ module Minuteman
     end
 
     def key
-      "#{self.class.name}::#{type}:#{time}"
+      Nest.new("#{self.class.name}::#{type}:#{time}", Minuteman.config.redis)
     end
-
   end
 end
