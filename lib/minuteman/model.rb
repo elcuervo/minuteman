@@ -1,4 +1,5 @@
-require 'ohm'
+require "ohm"
+require "nest"
 
 module Minuteman
   class Model < ::Ohm::Model

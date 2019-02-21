@@ -1,5 +1,3 @@
-require 'msgpack'
-
 module Minuteman
   module Analyzable
     module ErrorPatterns
